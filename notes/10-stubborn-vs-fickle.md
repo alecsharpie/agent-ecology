@@ -4,15 +4,17 @@
 
 ## The comparison
 
-| Measure | **A**: Qwen 1.5B, greedy (2 seeds) | **B**: Qwen 1.5B, T=0.7 (3 seeds) | **D**: Llama 3.2 1B, T=0.7 (1 seed so far) |
+| Measure | **A**: Qwen 1.5B, greedy (2 seeds) | **B**: Qwen 1.5B, T=0.7 (3 seeds) | **D**: Llama 3.2 1B, T=0.7 (2 seeds) |
 |---|---|---|---|
-| Converged (pre-registered rule) | 0 / 2 | 0 / 3 | 0 / 1 |
-| Consensus, last 10 rounds | 0.51, 0.50 | 0.39, 0.55, 0.50 | **0.26** (chance is about 0.2) |
-| Repeats a winning name | 93%, 88% | 87%, 86%, 82% | **32%** |
-| After a mismatch: keeps own name | 84%, 79% | 71%, 64%, 66% | **11%** |
-| After a mismatch: tries a random other name | 14%, 20% | 26%, 32%, 30% | **87%** |
-| After a mismatch: copies the partner | 2%, 1% | 3%, 4%, 4% | 2% |
+| Converged (pre-registered rule) | 0 / 2 | 0 / 3 | 0 / 2 |
+| Consensus, last 10 rounds | 0.51, 0.50 | 0.39, 0.55, 0.50 | **0.26, 0.23** (chance is about 0.2) |
+| Repeats a winning name | 93%, 88% | 87%, 86%, 82% | **32%, 38%** |
+| After a mismatch: keeps own name | 84%, 79% | 71%, 64%, 66% | **11%, 8%** |
+| After a mismatch: tries a random other name | 14%, 20% | 26%, 32%, 30% | **87%, 90%** |
+| After a mismatch: copies the partner | 2%, 1% | 3%, 4%, 4% | 2%, 3% |
 | Leading name | T, Q | Q, Q, Q | none |
+
+![Consensus by condition](figures/consensus-by-condition.svg)
 
 ## Reading it with the habit phase diagram
 

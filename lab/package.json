@@ -13,7 +13,8 @@
     "cascade": "node --experimental-strip-types --no-warnings scripts/run-cascade.ts",
     "el-farol": "node --experimental-strip-types --no-warnings scripts/run-el-farol.ts",
     "analyse": "node --experimental-strip-types --no-warnings scripts/analyse.ts",
-    "habit": "node --experimental-strip-types --no-warnings scripts/run-habit.ts"
+    "habit": "node --experimental-strip-types --no-warnings scripts/run-habit.ts",
+    "figures": "node --experimental-strip-types --no-warnings scripts/figures.ts"
   },
   "dependencies": {
     "@mlc-ai/web-llm": "^0.2.85"
