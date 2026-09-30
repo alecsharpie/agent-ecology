@@ -66,7 +66,7 @@ if (process.env.PROBE) {
 
 if (process.env.CASCADE) {
   for (const model of process.env.CASCADE.split(","))
-    await withRetries(new URLSearchParams({ model, temp: process.env.TEMP ?? "0.7", n: process.env.N ?? "100", go: "run" }), "cascade.html");
+    await withRetries(new URLSearchParams({ model, temp: process.env.TEMP ?? "0.7", n: process.env.N ?? "100", labels: process.env.LABELS ?? "letters", go: "run" }), "cascade.html");
   console.log("all done");
   process.exit(0);
 }

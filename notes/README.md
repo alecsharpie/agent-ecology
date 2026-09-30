@@ -13,6 +13,8 @@
 
 7. **Why the LLM populations behave this way** ([08](08-probes-and-biased-copying.md)): given a scripted history of 5 losses to partners who all played Y, the model plays its own name again 92% of the time. It repeats itself, whatever the payoff. And when agents do copy a partner, they are about 3 times more likely to copy a name they already like. Social influence filtered by personal taste is how an individual preference becomes the group's convention.
 
+8. **Small models hit capability floors before social effects appear** ([09](09-llm-cascades.md)). In the urn-guessing cascade game, Qwen2.5 1.5B couldn't even use its own evidence: its first guess was right 52% of the time, a coin flip. You can't herd if you can't infer.
+
 ## Index
 
 Working notes, in the order they were written. [`journal.md`](journal.md) is the running log, and each experiment gets its own file.
@@ -28,3 +30,4 @@ Working notes, in the order they were written. [`journal.md`](journal.md) is the
 | 06 | [Habits: what an agent must do for a convention](06-habits.md) | done (CPU); probes next |
 | 07 | [Critical mass depends on memory length](07-tipping-vs-memory.md) | done (CPU) |
 | 08 | [Probes: why LLM agents don't converge, and why Q wins](08-probes-and-biased-copying.md) | done (exploratory) |
+| 09 | [Information cascades with an LLM](09-llm-cascades.md) | v1: chance level; v2 queued |

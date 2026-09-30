@@ -34,7 +34,8 @@ function setStatus(phase: string, text: string, progress?: number) {
   }
 }
 
-const runName = () => `cascade-${modelSel.value.split("-").slice(0, 3).join("-")}-t${tempIn.value.replace(".", "")}`.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+const labels = (params.get("labels") === "colours" ? "colours" : "letters") as "letters" | "colours";
+const runName = () => `cascade-${modelSel.value.split("-").slice(0, 3).join("-")}-t${tempIn.value.replace(".", "")}${labels === "colours" ? "-colours" : ""}`.toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
 async function loadSaved(name: string): Promise<{ sequences: LLMSequence[] } | null> {
   try {
@@ -109,8 +110,8 @@ async function run() {
     const started = performance.now();
     const before = seqs.length;
     while (seqs.length < n && !controller.signal.aborted) {
-      seqs.push(await runLLMSequence(llm, PLAYERS, seqs.length, temperature));
-      await fetch(`/__save-results?name=${name}`, { method: "POST", body: JSON.stringify({ meta: { model: modelSel.value, temperature, players: PLAYERS, gpu }, sequences: seqs }) }).catch(() => {});
+      seqs.push(await runLLMSequence(llm, PLAYERS, seqs.length, temperature, labels));
+      await fetch(`/__save-results?name=${name}`, { method: "POST", body: JSON.stringify({ meta: { model: modelSel.value, temperature, players: PLAYERS, labels, gpu }, sequences: seqs }) }).catch(() => {});
       render(seqs);
       const per = (performance.now() - started) / (seqs.length - before);
       setStatus("running", `${name}: sequence ${seqs.length} of ${n}. About ${Math.max(1, Math.round((per * (n - seqs.length)) / 60000))} min left.`, seqs.length / n);

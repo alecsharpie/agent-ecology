@@ -14,7 +14,7 @@ test("bayes follows its ball until revealed balls lead by 2, then cascades", () 
 });
 
 test("prompt shows the ball colour and earlier guesses, with counterbalanced framing", () => {
-  const frames = [...Array(40).keys()].map(framingFor);
+  const frames = [...Array(40).keys()].map((s) => framingFor(s));
   assert.ok(frames.some((f) => f.aColour === "red") && frames.some((f) => f.aColour === "blue"));
   const f = { aColour: "blue" as const, firstUrn: "B" as const };
   const text = cascadePrompt("a", ["A", "B"], f).map((m) => m.content).join("\n");
@@ -25,18 +25,30 @@ test("prompt shows the ball colour and earlier guesses, with counterbalanced fra
   assert.equal(parseUrn("B"), null);
 });
 
-test("an LLM that always follows its ball behaves exactly like 'own'", async () => {
+test("colour labels: urns are named by majority colour, both ways", () => {
+  const f = { aColour: "blue" as const, firstUrn: "B" as const, labels: "colours" as const };
+  const text = cascadePrompt("b", ["A", "B"], f).map((m) => m.content).join("\n");
+  assert.match(text, /The red urn contains 2 red balls and 1 blue ball\. The blue urn contains 2 blue balls/);
+  assert.match(text, /You drew a red ball/);
+  assert.match(text, /guessed, in order: blue, red/);
+  assert.match(text, /\{"urn": "red" or "blue"\}/);
+  assert.equal(parseUrn('{"urn": "blue"}', f), "A");
+  assert.equal(parseUrn('{"urn": "A"}', f), null);
+});
+
+for (const labels of ["letters", "colours"] as const)
+test(`an LLM that always follows its ball behaves exactly like 'own' (${labels})`, async () => {
   // Read the ball colour off the prompt and answer the urn whose majority colour it is.
   const llm: LLM = {
     async complete(m: ChatMessage[]): Promise<Completion> {
       const text = m.map((x) => x.content).join("\n");
       const colour = /You drew a (\w+) ball/.exec(text)![1];
-      const urn = new RegExp(`Urn (\\w) contains 2 ${colour}`).exec(text)![1];
+      const urn = labels === "colours" ? colour : new RegExp(`Urn (\\w) contains 2 ${colour}`).exec(text)![1];
       return { text: JSON.stringify({ urn }), promptTokens: 1, completionTokens: 1, ms: 1 };
     },
   };
   for (const seed of [1, 2, 3]) {
-    const s = await runLLMSequence(llm, 10, seed, 0);
+    const s = await runLLMSequence(llm, 10, seed, 0, labels);
     assert.deepEqual(s.turns.map((t) => t.guess), runSequence("own", 10, seed).turns.map((t) => t.guess));
     assert.ok(s.turns.every((t) => !t.overrodeOwn));
   }

@@ -24,3 +24,4 @@ Running log, newest last. Decisions, surprises and dead ends go here. Results go
 - Tally variant, seeds 0–1 (paired): consensus 0.39 → 0.64 and 0.55 → 0.65, always Q; copying 3–4% → 10–12%. Still no convergence.
 - Probes: the model plays its own previous name 92% of the time even after 5 losses to partners who all played Y. The tally line adds scatter, not copying.
 - Key finding: copying is 2.5–3× higher when the partner's name is Q, the model's favourite. That's content-biased transmission, the mechanism for Q's lead. See [08](08-probes-and-biased-copying.md).
+- LLM cascades v1 (urns named A/B): chance level, with player 1 following its own ball 52% of the time. The page hot-reloaded at sequence 89 after I edited an imported module; only 0–87 are analysed. v2 (urns named by colour) queued after A and D. See [09](09-llm-cascades.md).
