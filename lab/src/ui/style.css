@@ -81,3 +81,10 @@ code { font-size: 12px; }
 .msg .role { display: block; font-size: 11px; color: var(--ink-3); padding: 3px 8px; background: var(--surface-2); text-transform: uppercase; letter-spacing: 0.04em; }
 .msg pre { margin: 0; padding: 8px; white-space: pre-wrap; font-size: 12px; line-height: 1.45; }
 .chart .threshold.chance { stroke-dasharray: 2 4; }
+.seq td { text-align: center; min-width: 38px; }
+.seq td sub { color: var(--ink-3); font-size: 9px; margin-left: 2px; }
+.seq td.against { outline: 2px solid var(--ink-2); outline-offset: -3px; border-radius: 4px; }
+.seq td.irrational { opacity: 0.5; }
+.ball { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.ball.red { background: #e34948; }
+.ball.blue { background: #2a78d6; }

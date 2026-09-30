@@ -46,4 +46,5 @@ function saveResults(): Plugin {
 export default defineConfig({
   plugins: [saveResults()],
   server: { port: 5190, strictPort: true, watch: { ignored: ["**/public/results/**"] } },
+  build: { rollupOptions: { input: { main: resolve(__dirname, "index.html"), cascade: resolve(__dirname, "cascade.html") } } },
 });

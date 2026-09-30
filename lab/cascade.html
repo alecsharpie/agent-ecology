@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cascade lab</title>
+    <link rel="stylesheet" href="/src/ui/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Information cascades</h1>
+        <p class="sub">Ten language-model players guess which urn was chosen. Each sees one private ball plus everyone's earlier guesses. Do they herd, and into wrong answers? A replication of Anderson &amp; Holt (1997) with small in-browser models. <a href="/">Naming game →</a></p>
+      </header>
+      <details class="explain" open>
+        <summary>How this works</summary>
+        <ol>
+          <li>A coin picks urn A or urn B. One urn holds 2 red balls and 1 blue; the other 2 blue and 1 red. Which colour belongs to which urn is swapped between sequences so the model can't lean on a fixed association.</li>
+          <li>Players go one at a time. Each privately draws a ball (it points to the right urn 2 times in 3) and sees all earlier <i>guesses</i>, but not earlier balls.</li>
+          <li><b>The rational benchmark:</b> follow your own ball until the earlier guesses lead by 2, then follow the lead whatever you drew. That is a cascade. It is individually rational, and it wrongly locks in about 1 sequence in 5.</li>
+          <li>Each row below is one sequence: the ball each player drew, their guess, and what the rational player would have guessed. A highlighted guess went <i>against</i> the player's own ball.</li>
+        </ol>
+      </details>
+      <section class="controls">
+        <label>Model <select id="model"></select></label>
+        <label>Temperature <input id="temp" type="number" min="0" max="2" step="0.1" value="0.7" /></label>
+        <label>Sequences <input id="n" type="number" min="1" value="100" /></label>
+        <button id="run">Run</button>
+        <button id="stop" class="secondary" disabled>Stop</button>
+      </section>
+      <div id="progress" class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" hidden><div class="fill"></div></div>
+      <p id="status" data-phase="idle" role="status">Idle.</p>
+      <section id="summary"></section>
+      <section id="rows" class="table-wrap"></section>
+    </main>
+    <script type="module" src="/src/ui/cascade.ts"></script>
+  </body>
+</html>
