@@ -52,10 +52,9 @@ function lineChart(o: { title: string; subtitle: string; xLabel: string; yLabel:
 }
 
 // ---------- 1. cascade conformity curve ----------
-const cascadeFile = "public/results/cascade-qwen2-5-1-5b-instruct-t07-colours.json";
-if (existsSync(cascadeFile)) {
-  type Turn = { ball: "a" | "b"; guess: "A" | "B"; overrodeOwn: boolean };
-  const S = (JSON.parse(readFileSync(cascadeFile, "utf8")) as { sequences: { turns: Turn[] }[] }).sequences;
+type Turn = { ball: "a" | "b"; guess: "A" | "B"; overrodeOwn: boolean };
+function conformity(file: string): [number, number][] {
+  const S = (JSON.parse(readFileSync(file, "utf8")) as { sequences: { turns: Turn[] }[] }).sequences;
   const bins = new Map<number, [number, number]>();
   for (const s of S)
     s.turns.forEach((t, i) => {
@@ -66,17 +65,23 @@ if (existsSync(cascadeFile)) {
       const b = bins.get(net) ?? [0, 0];
       bins.set(net, [b[0] + (t.overrodeOwn ? 1 : 0), b[1] + 1]);
     });
-  const llm = [...bins].sort((a, b) => a[0] - b[0]).map(([k, [a, n]]) => [k, a / n] as [number, number]);
-  const rational: [number, number][] = [-3, -2, -1, 0, 1, 2, 3].map((k) => [k, k >= 2 ? 1 : 0]);
+  return [...bins].sort((a, b) => a[0] - b[0]).map(([k, [a, n]]) => [k, a / n]);
+}
+const cascades = [
+  { label: "Qwen 1.5B, T=0.7", file: "public/results/cascade-qwen2-5-1-5b-instruct-t07-colours.json", colour: SERIES[0] },
+  { label: "Llama 1B, T=0.7", file: "public/results/cascade-llama-3-2-1b-t07-colours.json", colour: SERIES[2] },
+  { label: "Qwen 1.5B, greedy", file: "public/results/cascade-qwen2-5-1-5b-instruct-t0-colours.json", colour: SERIES[3] },
+].filter((c) => existsSync(c.file));
+if (cascades.length) {
   writeFileSync(`${OUT}/cascade-conformity.svg`, lineChart({
-    title: "LLM players slide toward the crowd; rational players switch at a lead of 2",
-    subtitle: `Qwen2.5 1.5B, ${S.length} sequences of 10 players. How often a player guessed against its own ball.`,
+    title: "Sampled LLM players slide toward the crowd; greedy ones switch in a step",
+    subtitle: "100 sequences of 10 players each. How often a player guessed against its own ball.",
     xLabel: "earlier guesses against my ball minus guesses for it (capped at ±3)",
     yLabel: "went against own ball",
     xTicks: [-3, -2, -1, 0, 1, 2, 3], xFmt: (v) => (v > 0 ? `+${v}` : String(v)),
     series: [
-      { label: "Qwen2.5 1.5B", points: llm, colour: SERIES[0], dots: true },
-      { label: "rational (Bayes)", points: rational, colour: SERIES[1], step: true },
+      ...cascades.map((c) => ({ label: c.label, points: conformity(c.file), colour: c.colour, dots: true })),
+      { label: "rational (Bayes)", points: [-3, -2, -1, 0, 1, 2, 3].map((k) => [k, k >= 2 ? 1 : 0] as [number, number]), colour: SERIES[1], step: true },
     ],
   }));
   console.log("wrote cascade-conformity.svg");

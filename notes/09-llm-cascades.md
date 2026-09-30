@@ -36,8 +36,6 @@ The page hot-reloaded at sequence 89, because I edited code it imports. It resum
 | Accuracy over all guesses | 49% | **52%** | 67% | 76% |
 | Last 3 players all wrong | – | **31%** | 0% | about 19% |
 
-![Conformity curve](figures/cascade-conformity.svg)
-
 ### What happened
 
 1. **Naming the urns by colour helped the individual step.** Player 1 now follows its evidence 70% of the time: not reliable, but well above chance.
@@ -48,9 +46,25 @@ The page hot-reloaded at sequence 89, because I edited code it imports. It resum
 
 Two things combine. Each player's own reading of its ball is noisy (70% at best), so early guesses are often wrong, *and* later players conform to early guesses even on a lead of one. A rational player only joins a cascade built on two independent pieces of evidence. The model joins one built on a single noisy guess, and then its own guess adds to the lead the next player sees. Errors snowball. **Every player sees more information than player 1, yet the group ends up less accurate than if nobody had looked.** That's an emergent harm: nobody's individual rule is "be wrong", but the social process produces wrongness.
 
+### Robustness: a second model, and greedy decoding
+
+| 100 sequences each, colour labels | Qwen 1.5B, T=0.7 | **Llama 1B, T=0.7** | **Qwen 1.5B, greedy** | Rational |
+|---|---|---|---|---|
+| Player 1 follows its own ball | 70% | 75% | **55%** | 100% |
+| Accuracy over all guesses | 52% | 60% | 59% | 76% |
+| Last 3 players all wrong | 31% | 22% | **41%** | about 19% |
+| Against own ball, crowd +1 / +2 / +3 | 56 / 77 / 83% | 48 / 57 / 70% | 55 / **100 / 100%** | 0 / 100 / 100% |
+
+- **The smooth conformity curve is not Qwen-specific.** Llama shows the same shape, a bit flatter, and its groups are also worse than independent guessing (60% against 67%).
+- **Under greedy decoding the curve becomes a step, at exactly the rational threshold.** Greedy Qwen never goes against its ball at −1 or below, and always does at +2 or above, like the Bayesian player. The smooth curve at T=0.7 is sampling noise blurring a sharp underlying rule.
+- **So why is greedy Qwen's group the *worst* (41% wrong lock-ins)?** Its player 1 answers **"blue" in all 100 sequences**, whatever ball it drew and whichever urn is listed first. A pure colour bias. The rational-looking herding rule then faithfully broadcasts that quirk: whenever the true urn is red, the first guess is wrong and the crowd tends to lock onto it.
+
+This is the cleanest illustration in the project of how a group can be worse than its members: **a sensible social rule applied to a biased input amplifies the bias.** Rationality in how you use others' choices doesn't help if the first choices are systematically off.
+
+![Conformity curves](figures/cascade-conformity.svg)
+
 ### Caveats
 
-- One model, one temperature, 100 sequences. The conformity curve's shape should be checked against a second model and T=0.
 - The colour framing makes following your own ball a matter of repeating a word. Some of the "herding" may be the same repeat-what's-in-context habit seen in the naming game ([08](08-probes-and-biased-copying.md)): the prompt with "red, red, red" in it pulls toward "red". That's still herding by effect, but perhaps not by reasoning.
 
 ## What this says about emergence with small models
