@@ -25,3 +25,4 @@ Running log, newest last. Decisions, surprises and dead ends go here. Results go
 - Probes: the model plays its own previous name 92% of the time even after 5 losses to partners who all played Y. The tally line adds scatter, not copying.
 - Key finding: copying is 2.5–3× higher when the partner's name is Q, the model's favourite. That's content-biased transmission, the mechanism for Q's lead. See [08](08-probes-and-biased-copying.md).
 - LLM cascades v1 (urns named A/B): chance level, with player 1 following its own ball 52% of the time. The page hot-reloaded at sequence 89 after I edited an imported module; only 0–87 are analysed. v2 (urns named by colour) queued after A and D. See [09](09-llm-cascades.md).
+- Condition A (greedy Qwen), seeds 0–1: frozen solid (identical counts in rounds 20/30/40), led by T and Q. Condition D (Llama 1B), seed 0: the opposite, fickle (win-stay 32%, explores 87% after a loss), consensus at chance. See [10](10-stubborn-vs-fickle.md).

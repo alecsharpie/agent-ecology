@@ -15,6 +15,8 @@
 
 8. **Small models hit capability floors before social effects appear** ([09](09-llm-cascades.md)). In the urn-guessing cascade game, Qwen2.5 1.5B couldn't even use its own evidence: its first guess was right 52% of the time, a coin flip. You can't herd if you can't infer.
 
+9. **Different models fail in opposite ways** ([10](10-stubborn-vs-fickle.md)). Qwen is too stubborn: it repeats its own name even after five losses, so camps freeze (and freeze solid with greedy decoding). Llama is too fickle: it abandons even winning names two times out of three, so nothing accumulates. Neither copies its partners, which is the one habit every converging population needs.
+
 ## Index
 
 Working notes, in the order they were written. [`journal.md`](journal.md) is the running log, and each experiment gets its own file.
@@ -31,3 +33,4 @@ Working notes, in the order they were written. [`journal.md`](journal.md) is the
 | 07 | [Critical mass depends on memory length](07-tipping-vs-memory.md) | done (CPU) |
 | 08 | [Probes: why LLM agents don't converge, and why Q wins](08-probes-and-biased-copying.md) | done (exploratory) |
 | 09 | [Information cascades with an LLM](09-llm-cascades.md) | v1: chance level; v2 queued |
+| 10 | [Stubborn vs fickle: Qwen, greedy Qwen, Llama](10-stubborn-vs-fickle.md) | A: 2 seeds, B: 3, D: 1 (more running) |
