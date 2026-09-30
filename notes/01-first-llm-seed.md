@@ -1,4 +1,4 @@
-# 01: First LLM seed: Qwen2.5 1.5B, T=0.7 (condition B, seed 0)
+# 01: Condition B: Qwen2.5 1.5B, T=0.7 (seeds 0–2)
 
 **Data:** `lab/public/results/naming-b-letters-game-s0.json`. **Inspect:** `npm run dev`, then open `http://localhost:5190/?cond=B&seed=0&go=view` and click any agent. **Analyse:** `npm run analyse -- public/results/naming-b-letters-game-s0.json`.
 
@@ -40,9 +40,21 @@ Stubbornness freezes a population. Once there are two big camps, a T agent meets
 
 They were already the top two names in round 1, when every agent had empty memory. In round 1, 14 of 24 agents picked the *first* name shown and 8 the second, so position drives the empty-memory choice. But Q and T were each picked 6 times, well above the 2.4 you'd expect from 10 shuffled names. So the model seems to have a real prior for Q and T, even over position. The individual baseline (200 fresh agents) will measure this directly.
 
+## Seeds 1 and 2 (headless, about 18 min each)
+
+| Seed | Converged (>0.9 for 5 rounds) | Mean consensus, last 10 rounds | Leading name, last 10 rounds | Runner-up | Win-stay | After a mismatch: copy / keep / other |
+|---|---|---|---|---|---|---|
+| 0 | no | 0.39 | Q 39% | T 34% | 87% | 3% / 71% / 26% |
+| 1 | no | 0.55 | **Q 55%** (majority) | T 34% | 86% | 4% / 64% / 32% |
+| 2 | no | 0.50 | **Q 50%** | T 25% | 82% | 4% / 66% / 30% |
+
+- **The same story three times.** No seed passes the pre-registered bar, but Q gains ground in all three, and in seeds 1 and 2 it holds a majority by the end. The agents' habits are almost identical across seeds, which suggests they are a property of the model and prompt, not of the run.
+- **Q wins even from behind.** In seed 2, Z led round 1 (8 of 24 agents) and Q had only 5. By round 10 Q was ahead and Z had faded. The model's own preference for Q ([05](05-individual-bias.md)) keeps feeding Q through the "try a different name" choices, since fresh picks favour Q.
+- **Collective bias, tentatively.** Q is 28% of solo picks but led all 3 populations. If population leaders simply followed the solo distribution, that would happen about 2% of the time (0.28³). That's a post-hoc number on 3 seeds, so exploratory, not a test. But it's the same shape as the rule-model result, where a weak individual lean doubled a name's win rate ([00](00-rule-baseline.md)): **amplification of an individual bias, not a bias that no individual has.**
+
 ## Against the frozen predictions
 
-Prediction 1 ("B converges in most seeds within 40 rounds") is off to a bad start: 0 of 1. One seed isn't a verdict. More seeds are running.
+Prediction 1 ("B converges in most seeds within 40 rounds"): 0 of 3 so far. It needs at least 3 of 5, so it can no longer pass unless seeds 3 and 4 both converge, which looks unlikely. By the pre-registered rule it is heading for **wrong**. Note [06](06-habits.md) shows the rule itself may be out of reach for sampled agents. That caveat will be reported next to the grade, not used to change it.
 
 ## What to try next (exploratory, labelled as such)
 
