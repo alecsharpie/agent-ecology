@@ -11,6 +11,8 @@
 5. **Tipping points are cliffs, and memory sets where the cliff is.** Overturning a convention takes 13–29% committed agents depending on how many rounds agents remember. Below that, nothing happens; a couple more agents, and it always flips ([00](00-rule-baseline.md), [07](07-tipping-vs-memory.md)).
 6. **The same lesson shows up in three classic models.** Mild preferences produce strong segregation ([02](02-schelling.md)); rational people herd into wrong answers about 1 time in 5 ([03](03-information-cascades.md)); a crowd self-organises around a bar's capacity only if its members think differently, and a monoculture fails completely ([04](04-el-farol.md)).
 
+7. **Why the LLM populations behave this way** ([08](08-probes-and-biased-copying.md)): given a scripted history of 5 losses to partners who all played Y, the model plays its own name again 92% of the time. It repeats itself, whatever the payoff. And when agents do copy a partner, they are about 3 times more likely to copy a name they already like. Social influence filtered by personal taste is how an individual preference becomes the group's convention.
+
 ## Index
 
 Working notes, in the order they were written. [`journal.md`](journal.md) is the running log, and each experiment gets its own file.
@@ -25,3 +27,4 @@ Working notes, in the order they were written. [`journal.md`](journal.md) is the
 | 05 | [Individual bias baseline (Qwen2.5 1.5B)](05-individual-bias.md) | done |
 | 06 | [Habits: what an agent must do for a convention](06-habits.md) | done (CPU); probes next |
 | 07 | [Critical mass depends on memory length](07-tipping-vs-memory.md) | done (CPU) |
+| 08 | [Probes: why LLM agents don't converge, and why Q wins](08-probes-and-biased-copying.md) | done (exploratory) |

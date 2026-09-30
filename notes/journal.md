@@ -18,3 +18,9 @@ Running log, newest last. Decisions, surprises and dead ends go here. Results go
 - **Methodological flag:** the pre-registered convergence rule (above 0.9 for 5 rounds) may be unreachable for any sampled (T=0.7) population. I'm not changing it; I'm adding reports of the consensus level and stable majorities alongside it.
 - Critical mass vs memory (CPU): 13% at M=3, 21% at M=5, 25% at M=8, 29% at M=12; M ≤ 2 barely converges. Always a cliff. See [07](07-tipping-vs-memory.md).
 - B seeds 1–2 done: no convergence, but Q leads in all 3 seeds (majority in 2), even overtaking an early Z lead in seed 2. Tentative amplification of the individual Q preference. Prediction 1 is heading for wrong.
+
+## 2026-10-01
+
+- Tally variant, seeds 0–1 (paired): consensus 0.39 → 0.64 and 0.55 → 0.65, always Q; copying 3–4% → 10–12%. Still no convergence.
+- Probes: the model plays its own previous name 92% of the time even after 5 losses to partners who all played Y. The tally line adds scatter, not copying.
+- Key finding: copying is 2.5–3× higher when the partner's name is Q, the model's favourite. That's content-biased transmission, the mechanism for Q's lead. See [08](08-probes-and-biased-copying.md).
