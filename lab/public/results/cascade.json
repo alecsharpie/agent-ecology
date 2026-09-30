@@ -1,0 +1,271 @@
+{
+ "params": {
+  "PLAYERS": 10,
+  "SEQUENCES": 10000
+ },
+ "deciders": {
+  "own": {
+   "byPos": [
+    0.6702,
+    0.6675,
+    0.6649,
+    0.6693,
+    0.6714,
+    0.6694,
+    0.6661,
+    0.6636,
+    0.669,
+    0.6592
+   ],
+   "right": 0,
+   "wrong": 0,
+   "overrode": 0
+  },
+  "bayes": {
+   "byPos": [
+    0.6702,
+    0.6675,
+    0.7453,
+    0.7449,
+    0.7745,
+    0.7806,
+    0.7923,
+    0.7929,
+    0.8003,
+    0.7998
+   ],
+   "right": 7022,
+   "wrong": 1854,
+   "overrode": 0.25663,
+   "example": {
+    "urn": "A",
+    "turns": [
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "a",
+      "guess": "A",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": true
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": true
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": true
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": true
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": true
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": true
+     }
+    ]
+   }
+  },
+  "majority": {
+   "byPos": [
+    0.6702,
+    0.6675,
+    0.7453,
+    0.7449,
+    0.7745,
+    0.7806,
+    0.7923,
+    0.7929,
+    0.8003,
+    0.7998
+   ],
+   "right": 7022,
+   "wrong": 1854,
+   "overrode": 0.25663,
+   "example": {
+    "urn": "A",
+    "turns": [
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "a",
+      "guess": "A",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": false
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     }
+    ]
+   }
+  },
+  "stubborn": {
+   "byPos": [
+    0.6702,
+    0.6675,
+    0.6649,
+    0.7436,
+    0.7382,
+    0.794,
+    0.7886,
+    0.8221,
+    0.8217,
+    0.8455
+   ],
+   "right": 5747,
+   "wrong": 851,
+   "overrode": 0.14759,
+   "example": {
+    "urn": "A",
+    "turns": [
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "a",
+      "guess": "A",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": false
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": true
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": true
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": true
+     },
+     {
+      "ball": "a",
+      "guess": "B",
+      "overrodeOwn": true,
+      "inCascade": true
+     },
+     {
+      "ball": "b",
+      "guess": "B",
+      "overrodeOwn": false,
+      "inCascade": true
+     }
+    ]
+   }
+  }
+ }
+}

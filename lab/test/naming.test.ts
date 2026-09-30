@@ -5,7 +5,7 @@ import { POOLS, buildPrompt, parseAnswer, payoff, window, answerSchema } from ".
 import { majorityPolicy, minimalNamingGame } from "../src/games/naming-rule.ts";
 import { pairAgents, poolOrder, replayMemory, runGame, type Decision, type Policy, type Request } from "../src/sim/population.ts";
 import { llmPolicy } from "../src/sim/llm-policy.ts";
-import { convergence, flipped, positionCounts, parseCounts, summarise, consensusSeries } from "../src/analysis/naming.ts";
+import { convergence, flipped, positionCounts, parseCounts, summarise, consensusSeries, strategy } from "../src/analysis/naming.ts";
 import { permutationTvd, tvd, wilson } from "../src/lib/stats.ts";
 import type { RunLog } from "../src/sim/record.ts";
 
@@ -127,7 +127,7 @@ test("a resumed run is identical to an uninterrupted one", async () => {
 
 const synthetic = (rounds: string[][]): RunLog => ({
   meta: { experiment: "naming", condition: "s", seed: 0, agents: rounds[0].length, rounds: rounds.length, memory: 5, pool: "letters", wording: "game", agentPolicies: [], committed: [], startedAt: "", finishedAt: "" },
-  plays: rounds.flatMap((names, round) => names.map((name, agent) => ({ round, agent, partner: agent ^ 1, name, order: letters, position: letters.indexOf(name), payoff: 0, status: "ok" as const, policy: "s" }))),
+  plays: rounds.flatMap((names, round) => names.map((name, agent) => ({ round, agent, partner: agent ^ 1, name, order: letters, position: letters.indexOf(name), payoff: payoff(name, names[agent ^ 1] ?? name), status: "ok" as const, policy: "s" }))),
   initialMemory: [],
   finalMemory: [],
 });
@@ -166,4 +166,24 @@ test("the classic minimal naming game reaches consensus", () => {
   const r = minimalNamingGame(24, letters, 20000, 3);
   assert.ok(r.consensusAt !== null);
   assert.ok(letters.includes(r.winner!));
+});
+
+test("tally wording adds one summary line of partner plays; other wordings don't", () => {
+  const mem = [
+    { mine: "F", theirs: "Q", payoff: -50 },
+    { mine: "F", theirs: "T", payoff: -50 },
+    { mine: "Q", theirs: "Q", payoff: 100 },
+  ];
+  const text = (w: "game" | "tally") => buildPrompt(w, letters, mem)[1].content;
+  assert.match(text("tally"), /Summary: in these rounds your partners picked Q 2 times, T 1 time\./);
+  assert.doesNotMatch(text("game"), /Summary/);
+  assert.doesNotMatch(buildPrompt("tally", letters, [])[1].content, /Summary/);
+});
+
+test("strategy counts win-stay, and copy / keep / other after a mismatch", () => {
+  // Agents 0 and 1 are partners every round. Round 1: F vs J (mismatch). Round 2: agent 0 copies J,
+  // agent 1 keeps J (match). Round 3: both repeat J (win-stay).
+  const log = synthetic([["F", "J"], ["J", "J"], ["J", "J"]]);
+  const s = strategy(log);
+  assert.deepEqual(s, { winStay: 2, win: 2, loseCopy: 1, loseStay: 1, loseOther: 0, lose: 2 });
 });

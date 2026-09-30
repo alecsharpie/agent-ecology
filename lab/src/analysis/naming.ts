@@ -115,3 +115,32 @@ export function tippingPoint(fraction: number, logs: RunLog[], alternative: (l: 
   const k = logs.filter((l) => flipped(l, alternative(l))).length;
   return { fraction, runs: logs.length, flipped: k, rate: logs.length ? k / logs.length : 0, ci: wilson(k, logs.length) };
 }
+
+/**
+ * How agents react to their last outcome. After a match: repeat the same name (win-stay)?
+ * After a mismatch: copy the partner, keep their own name, or try a third name? Committed agents excluded.
+ */
+export function strategy(log: RunLog) {
+  const byRound = new Map(log.plays.map((p) => [`${p.round}:${p.agent}`, p]));
+  const byAgent = new Map<number, RunLog["plays"]>();
+  for (const p of log.plays) (byAgent.get(p.agent) ?? byAgent.set(p.agent, []).get(p.agent)!).push(p);
+  const c = { winStay: 0, win: 0, loseCopy: 0, loseStay: 0, loseOther: 0, lose: 0 };
+  for (const [agent, ps] of byAgent) {
+    if (log.meta.committed[agent]) continue;
+    for (let i = 1; i < ps.length; i++) {
+      const prev = ps[i - 1];
+      const theirs = byRound.get(`${prev.round}:${prev.partner}`)!.name;
+      const now = ps[i].name;
+      if (prev.payoff > 0) {
+        c.win++;
+        if (now === prev.name) c.winStay++;
+      } else {
+        c.lose++;
+        if (now === theirs) c.loseCopy++;
+        else if (now === prev.name) c.loseStay++;
+        else c.loseOther++;
+      }
+    }
+  }
+  return c;
+}

@@ -27,20 +27,32 @@ export const payoff = (a: string, b: string) => (a === b ? PAYOFF.match : PAYOFF
 /** The last `m` memories, oldest first. */
 export const window = (memory: readonly Memory[], m: number) => (m <= 0 ? [] : memory.slice(-m));
 
-export type WordingId = "game" | "plain";
+export type WordingId = "game" | "plain" | "tally";
 
 const historyLines = (memory: readonly Memory[]) =>
   memory.length
     ? memory.map((h, i) => `Round ${i + 1}: you picked ${h.mine}, your partner picked ${h.theirs}, you got ${h.payoff > 0 ? "+" : ""}${h.payoff} points.`).join("\n")
     : "No rounds played yet.";
 
+/** One line summarising what recent partners played, most frequent first. Used by the "tally" wording. */
+export function partnerTally(memory: readonly Memory[]): string {
+  if (!memory.length) return "";
+  const t = new Map<string, number>();
+  for (const m of memory) t.set(m.theirs, (t.get(m.theirs) ?? 0) + 1);
+  return `Summary: in these rounds your partners picked ${[...t].sort((a, b) => b[1] - a[1]).map(([n, c]) => `${n} ${c} time${c > 1 ? "s" : ""}`).join(", ")}.`;
+}
+
 /**
- * Two wordings of the same game. The paper's effects should not depend on the phrasing,
+ * Wordings of the same game. "game" and "plain" are the two pre-registered wordings.
+ * "tally" is an exploratory variant: the "game" prompt plus one line that counts what recent
+ * partners played. It tests whether agents fail to coordinate because they can't pull that
+ * signal out of the round-by-round list. The paper's effects should not depend on the phrasing,
  * so an effect is only reported if it shows up under both.
  */
 export function buildPrompt(wording: WordingId, order: readonly string[], memory: readonly Memory[]): ChatMessage[] {
   const options = order.join(", ");
-  if (wording === "game") {
+  if (wording === "game" || wording === "tally") {
+    const tally = wording === "tally" && memory.length ? `\n${partnerTally(memory)}` : "";
     return [
       {
         role: "system",
@@ -53,7 +65,7 @@ export function buildPrompt(wording: WordingId, order: readonly string[], memory
       },
       {
         role: "user",
-        content: `Your recent rounds:\n${historyLines(memory)}\n\nWhich name do you pick this round? Answer with JSON: {"name": "<one name from the list>"}.`,
+        content: `Your recent rounds:\n${historyLines(memory)}${tally}\n\nWhich name do you pick this round? Answer with JSON: {"name": "<one name from the list>"}.`,
       },
     ];
   }

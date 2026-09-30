@@ -10,32 +10,44 @@
     <main>
       <header>
         <h1>Naming game</h1>
-        <p class="sub">24 agents, one model, local memory only. Do they agree on a name? Replicates Ashery, Aiello &amp; Baronchelli (2025) with small in-browser models.</p>
+        <p class="sub">24 language-model agents, each with only a short memory of its own games. Will they agree on a name that nobody chose for them? A replication of Ashery, Aiello &amp; Baronchelli (2025) with small models running in your browser.</p>
       </header>
+      <details class="explain" open>
+        <summary>How this works</summary>
+        <ol>
+          <li><b>Each round</b>, the 24 agents are paired at random. Both agents in a pair secretly pick one name from the same list of 10.</li>
+          <li><b>Same name:</b> both get +100. <b>Different names:</b> both lose 50. That's all they're told. Nobody says which name to pick.</li>
+          <li><b>Memory:</b> each agent sees only its own last 5 rounds (what it picked, what its partner picked, the points). It never sees other pairs or the population.</li>
+          <li><b>Every agent is the same model</b>, called once per round with its own memory. The list order is shuffled for every call, so "pick the first option" can't pass for a preference.</li>
+          <li><b>The question:</b> does one shared name <i>emerge</i> from these private, local interactions? Which name? And how few stubborn agents does it take to overturn it?</li>
+        </ol>
+      </details>
       <section class="controls">
         <label>Condition <select id="cond"></select></label>
-        <label>Pool <select id="pool"><option value="letters">letters</option><option value="nonsense">nonsense words</option></select></label>
-        <label>Wording <select id="wording"><option value="game">game</option><option value="plain">plain</option></select></label>
+        <label>Name list <select id="pool"><option value="letters">letters</option><option value="nonsense">nonsense words</option></select></label>
+        <label>Prompt wording <select id="wording"><option value="game">game</option><option value="plain">plain</option><option value="tally">game + partner tally (exploratory)</option></select></label>
         <label>Seed <input id="seed" type="number" min="0" value="0" /></label>
         <button id="run">Run seed</button>
+        <button id="load" class="secondary">View saved run</button>
         <button id="baseline" class="secondary">Individual baseline (200 fresh agents)</button>
         <button id="stop" class="secondary" disabled>Stop</button>
       </section>
+      <p id="cond-purpose" class="muted"></p>
+      <div id="progress" class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" hidden><div class="fill"></div></div>
       <p id="status" data-phase="idle" role="status">Idle.</p>
       <section class="panels">
         <figure>
-          <figcaption>Population, current round. Each cell is one agent and the name it just played. Filled cells played the round's most common name.</figcaption>
+          <figcaption><b id="round-label">No run yet</b>. Each square is one agent and the name it played. Blue squares played the round's most common name; ✓ means it matched its partner. <span id="round-tally"></span></figcaption>
           <div id="grid" class="grid"></div>
+          <label class="scrub">Replay rounds <input id="scrub" type="range" min="0" max="0" value="0" disabled /></label>
         </figure>
         <figure>
-          <figcaption>Consensus: share of each round's plays on that round's most common name. Dashed line is the 0.9 convergence threshold. Chance with 10 names is about 0.2.</figcaption>
+          <figcaption><b>Consensus over time</b>: the share of each round's plays on that round's most common name. It starts near chance (about 0.2 with 10 names). A run counts as converged once it stays above 0.9 for 5 rounds. Click the curve to view that round.</figcaption>
           <div id="chart" class="chart"></div>
         </figure>
       </section>
-      <section>
-        <h2 id="detail-title">Calls</h2>
-        <div id="detail"></div>
-      </section>
+      <section id="summary"></section>
+      <section id="agent" class="agent"></section>
     </main>
     <script type="module" src="/src/ui/main.ts"></script>
   </body>

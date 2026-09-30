@@ -8,7 +8,11 @@
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --no-warnings --test test/*.test.ts",
-    "rule": "node --experimental-strip-types --no-warnings scripts/run-rule.ts"
+    "rule": "node --experimental-strip-types --no-warnings scripts/run-rule.ts",
+    "schelling": "node --experimental-strip-types --no-warnings scripts/run-schelling.ts",
+    "cascade": "node --experimental-strip-types --no-warnings scripts/run-cascade.ts",
+    "el-farol": "node --experimental-strip-types --no-warnings scripts/run-el-farol.ts",
+    "analyse": "node --experimental-strip-types --no-warnings scripts/analyse.ts"
   },
   "dependencies": {
     "@mlc-ai/web-llm": "^0.2.85"

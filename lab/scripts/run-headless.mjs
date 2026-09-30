@@ -32,7 +32,9 @@ async function once(query) {
       await page.waitForTimeout(5000);
       const s = page.locator("#status");
       const [text, phase] = [await s.textContent(), await s.getAttribute("data-phase")];
-      if (text !== last && !/call \d+\/\d+$/.test(text ?? "") || /call 1\//.test(text ?? "")) console.log(new Date().toISOString().slice(11, 19), `[${phase}]`, (last = text));
+      // Log once per round (or per 10% of model loading), not every poll.
+      const key = `${phase} ${(text ?? "").replace(/, agent \d+ of \d+.*$/, "").replace(/(\d)\d%.*$/, "$1")}`;
+      if (key !== last) console.log(new Date().toISOString().slice(11, 19), `[${phase}]`, text, ((last = key), ""));
       if (phase === "done") return true;
       if (phase === "error" || phase === "stopped") throw new Error(text ?? phase);
     }
