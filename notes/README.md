@@ -17,7 +17,7 @@
 
 8. **LLM players herd, and it makes the group worse** ([09](09-llm-cascades.md)). In the urn-guessing game, once the urns were named by colour, Qwen2.5 1.5B followed a smooth conformity curve: the more earlier players disagreed with its evidence, the likelier it gave in, even against a lead of one. Rational players only give in at a lead of two. The result: LLM players were right 52% of the time, *worse* than ignoring everyone (67%), and the last three were all wrong in 31% of games. With the urns labelled "A" and "B", the model couldn't use its own evidence at all (52% on the first guess), a reminder that capability floors decide which social effects are reachable.
 
-9. **Different models fail in different ways** ([10](10-stubborn-vs-fickle.md)). Qwen 1.5B is too stubborn: it repeats its own name even after five losses, so camps freeze (and freeze solid with greedy decoding). Llama 1B is too fickle: it abandons even winning names two times out of three. Qwen 0.5B copies partners the most (about 22%) but drops winners half the time. Each misses a different part of the recipe for a convention.
+9. **Stubborn or fickle depends on the prompt as much as the model** ([10](10-stubborn-vs-fickle.md)). Under one wording Qwen 1.5B is stubborn: it repeats its name even after five losses, so camps freeze. Under another it's fickle, abandoning winning names 88% of the time. Llama 1B and Qwen 0.5B each sit somewhere else again. The one habit that never changes: **no model, under any wording, copies its partners more than about a fifth of the time**, and that's the ingredient every converging population needs. (I first attributed stubbornness to the model; the prompt-overlap check corrected that.)
 
 ## Index
 

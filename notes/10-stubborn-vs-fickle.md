@@ -1,5 +1,7 @@
 # 10: Stubborn and fickle: three models, three ways to fail
 
+> **Correction (added after the prompt-overlap check, below):** I first read "stubborn vs fickle" as a difference between *models*. The same Qwen 1.5B model becomes fickle under the "plain" wording (win-stay 12%). The habits belong to model **plus prompt**. See [Prompt-overlap check](#prompt-overlap-check-the-habits-follow-the-wording). The rest of this note is kept as written, so you can see the original reasoning.
+
 **Data:** `lab/public/results/naming-{a,b,d}-letters-game-s*.json`. Pre-registered conditions A (Qwen2.5 1.5B, greedy), B (Qwen2.5 1.5B, T=0.7) and D (Llama 3.2 1B, T=0.7); letters pool, "game" wording.
 
 ## The comparison
@@ -55,3 +57,25 @@ Note [06](06-habits.md) mapped which habits let a population converge: **always 
 | 5 | Critical mass between 10% and 30% | not run yet (needs a converged population) |
 
 The predictions assumed small models would behave roughly like the paper's frontier models, just more noisily. They don't: each model has systematic habits that push it off the region of the phase diagram where conventions form.
+
+## Prompt-overlap check: the habits follow the wording
+
+The plan required every effect to survive a second wording and a fresh name pool. Condition B, seed 0, three ways:
+
+| Qwen 1.5B, T=0.7, seed 0 | "game" wording, letters | **"plain" wording**, letters | "game" wording, **nonsense words** |
+|---|---|---|---|
+| Repeats a winning name | 87% | **12%** | 94% |
+| After a mismatch: copy / keep / explore | 3% / 71% / 26% | 2% / **7% / 92%** | 4% / 80% / 16% |
+| Consensus, last 10 rounds | 0.39 | 0.25 (chance) | 0.42 |
+| What the population did | two frozen camps (Q, T) | churn, no leader | three frozen camps (vunt 10, wug 9, dax 5), identical from round 30 on |
+| Round 1: picked the first-listed option | 14 / 24 | 9 / 24 | **21 / 24** |
+
+**What survives both checks:**
+- No convergence under any wording or pool.
+- **Copying partners stays at 2–4% everywhere.** That's the most robust habit we've measured, and the missing ingredient in every case.
+- A strong first-position bias, strongest with unfamiliar words.
+
+**What does not survive:**
+- **"Qwen is stubborn" is wrong as stated.** Under the "plain" wording the same model abandons a winning name 88% of the time, as fickle as Llama was. Stubbornness came from the "game" prompt, not the model. Likewise, Llama's fickleness (condition D) might be the prompt's doing; it has only been run with the "game" wording.
+
+The two wordings differ in several ways at once ("name" vs "label", "points" vs plain numbers, and the "game" wording states a goal: "maximise your own total points"). Which difference matters is open. Probes with the plain wording are queued to show which situations flip.
