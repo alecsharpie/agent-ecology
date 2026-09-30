@@ -1,0 +1,110 @@
+{
+ "N": 24,
+ "SEEDS": 100,
+ "SETUP": 60,
+ "TIP": 40,
+ "rows": [
+  {
+   "memory": 1,
+   "converged": 0,
+   "rates": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "criticalMass": null
+  },
+  {
+   "memory": 2,
+   "converged": 6,
+   "rates": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "criticalMass": 1
+  },
+  {
+   "memory": 3,
+   "converged": 100,
+   "rates": [
+    0,
+    0,
+    0.64,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "criticalMass": 3
+  },
+  {
+   "memory": 5,
+   "converged": 100,
+   "rates": [
+    0,
+    0,
+    0,
+    0.23,
+    0.99,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "criticalMass": 5
+  },
+  {
+   "memory": 8,
+   "converged": 100,
+   "rates": [
+    0,
+    0,
+    0,
+    0,
+    0.31,
+    0.93,
+    0.99,
+    1,
+    1,
+    1
+   ],
+   "criticalMass": 6
+  },
+  {
+   "memory": 12,
+   "converged": 100,
+   "rates": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0.13,
+    0.82,
+    1,
+    1,
+    1
+   ],
+   "criticalMass": 7
+  }
+ ]
+}
