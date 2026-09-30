@@ -1,4 +1,4 @@
-# 10: Stubborn and fickle: two models, two ways to fail
+# 10: Stubborn and fickle: three models, three ways to fail
 
 **Data:** `lab/public/results/naming-{a,b,d}-letters-game-s*.json`. Pre-registered conditions A (Qwen2.5 1.5B, greedy), B (Qwen2.5 1.5B, T=0.7) and D (Llama 3.2 1B, T=0.7); letters pool, "game" wording.
 
@@ -25,6 +25,20 @@ Note [06](06-habits.md) mapped which habits let a population converge: **always 
 - **Llama is too fickle.** It abandons even a winning name two times out of three, and after a loss picks a random name 87% of the time. That's the far right of the phase diagram, where too much exploration means nothing accumulates. Consensus stays at chance.
 - **Neither copies partners** (1–4%). That's the one ingredient every converging population in the phase diagram had, and it's what both models lack.
 
+## Condition C: Qwen2.5 0.5B, the smallest model (2 seeds)
+
+| Measure | Seed 0 | Seed 1 |
+|---|---|---|
+| Consensus, last 10 rounds | 0.33 | 0.33 |
+| Repeats a winning name | 52% | 55% |
+| After a mismatch: copy / keep / explore | **23%** / 32% / 46% | **21%** / 33% / 47% |
+| Leading names | W 30%, J 22% | J 30%, W 26% |
+
+- **The smallest model copies partners the most**: 21–23% of the time, 5–7 times as often as Qwen 1.5B. On the phase diagram's copy axis it is in the good range.
+- **But it can't hold on to a winner.** It repeats a winning name only about half the time and explores 46% of the time after a loss, so nothing accumulates. It sits between Qwen 1.5B (stubborn) and Llama (fickle).
+- **Different favourites.** Its populations drift to W and J, not Q and T. If the 0.5B model's solo favourites are W and J (the baseline is queued), then "a population drifts to its model's own favourite names" holds across models.
+- **Speed:** 0.32 s per call, about 3.5 times faster than 1.5B.
+
 ## Other differences
 
 - **Leaders.** Qwen populations are led by Q or T, its individual favourites ([05](05-individual-bias.md)). Greedy seed 0 went to T, decided by who happened to meet whom in the first rounds. Llama has no clear leader, because its agents don't hold on to anything long enough.
@@ -36,7 +50,7 @@ Note [06](06-habits.md) mapped which habits let a population converge: **always 
 |---|---|---|
 | 1 | B converges in most seeds | 0/3 converged; it needs at least 3 of 5, so this is heading for **wrong** |
 | 2 | A converges faster than B, always on the same name | **wrong so far**: A doesn't converge, and its two seeds are led by different names (T, Q) |
-| 3 | C (0.5B) mostly fails | not run yet |
+| 3 | C (0.5B) mostly fails | **right, trivially**: 0/2 converge, but so does every other LLM condition, so it says nothing about a capability floor specific to 0.5B |
 | 4 | Winners differ from the individual baseline | untestable yet: no winners under the pre-registered rule |
 | 5 | Critical mass between 10% and 30% | not run yet (needs a converged population) |
 

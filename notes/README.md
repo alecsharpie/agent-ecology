@@ -17,7 +17,7 @@
 
 8. **LLM players herd, and it makes the group worse** ([09](09-llm-cascades.md)). In the urn-guessing game, once the urns were named by colour, Qwen2.5 1.5B followed a smooth conformity curve: the more earlier players disagreed with its evidence, the likelier it gave in, even against a lead of one. Rational players only give in at a lead of two. The result: LLM players were right 52% of the time, *worse* than ignoring everyone (67%), and the last three were all wrong in 31% of games. With the urns labelled "A" and "B", the model couldn't use its own evidence at all (52% on the first guess), a reminder that capability floors decide which social effects are reachable.
 
-9. **Different models fail in opposite ways** ([10](10-stubborn-vs-fickle.md)). Qwen is too stubborn: it repeats its own name even after five losses, so camps freeze (and freeze solid with greedy decoding). Llama is too fickle: it abandons even winning names two times out of three, so nothing accumulates. Neither copies its partners, which is the one habit every converging population needs.
+9. **Different models fail in different ways** ([10](10-stubborn-vs-fickle.md)). Qwen 1.5B is too stubborn: it repeats its own name even after five losses, so camps freeze (and freeze solid with greedy decoding). Llama 1B is too fickle: it abandons even winning names two times out of three. Qwen 0.5B copies partners the most (about 22%) but drops winners half the time. Each misses a different part of the recipe for a convention.
 
 ## Index
 
@@ -35,4 +35,4 @@ Working notes, in the order they were written. [`journal.md`](journal.md) is the
 | 07 | [Critical mass depends on memory length](07-tipping-vs-memory.md) | done (CPU) |
 | 08 | [Probes: why LLM agents don't converge, and why Q wins](08-probes-and-biased-copying.md) | done (exploratory) |
 | 09 | [Information cascades with an LLM](09-llm-cascades.md) | done: v1 chance level; v2 conformity curve |
-| 10 | [Stubborn vs fickle: Qwen, greedy Qwen, Llama](10-stubborn-vs-fickle.md) | A: 2 seeds, B: 3, D: 2; C running |
+| 10 | [Stubborn vs fickle: Qwen, greedy Qwen, Llama](10-stubborn-vs-fickle.md) | A: 2, B: 3, C: 2, D: 2 seeds |
