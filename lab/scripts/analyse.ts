@@ -21,6 +21,12 @@ for (const f of files) {
   console.log(`\n# ${f}`);
   console.log(`${log.meta.condition} seed ${log.meta.seed}, ${rounds.length}/${log.meta.rounds} rounds${log.meta.finishedAt ? "" : " (unfinished)"}, parse ${pc.ok}/${pc.repaired}/${pc.failed}, median ${median(log.plays.map((p) => p.ms ?? 0))} ms/call`);
   console.log(`converged: ${conv.round !== null ? `round ${conv.round + 1} on ${conv.name}` : "no"}`);
+  // Reported alongside the pre-registered rule, which a sampled population may never pass (notes/06).
+  const tail = rounds.slice(-10);
+  const plateau = cons.slice(-10).reduce((a, b) => a + b, 0) / Math.min(10, cons.length);
+  const lastNames = tail.flat();
+  const top = [...new Set(lastNames)].map((n) => [n, lastNames.filter((x) => x === n).length / lastNames.length] as const).sort((a, b) => b[1] - a[1]);
+  console.log(`last 10 rounds: mean consensus ${plateau.toFixed(2)}; leading names ${top.slice(0, 3).map(([n, sh]) => `${n} ${Math.round(sh * 100)}%`).join(", ")}; stable majority (>50%): ${top[0][1] > 0.5 ? `yes, ${top[0][0]}` : "no"}`);
   console.log("round  consensus  top names");
   rounds.forEach((r, i) => {
     const t = new Map<string, number>();

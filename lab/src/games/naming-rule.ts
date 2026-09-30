@@ -78,3 +78,38 @@ export function minimalNamingGame(n: number, pool: readonly string[], interactio
   }
   return { success, distinctWords, consensusAt: null, winner: null };
 }
+
+/**
+ * A rule agent built from habits measured on LLM agents (see notes/06). It looks only at its
+ * last round:
+ *   after a match:    repeat with probability `winStay`, else pick a fresh name
+ *   after a mismatch: copy the partner with `loseCopy`, keep its own with `loseKeep`, else a fresh name
+ * "Fresh" names are drawn from `prior` weights (the individual baseline), excluding the name
+ * just played. If this agent reproduces the LLM population's behaviour, those habits are
+ * the mechanism.
+ */
+export interface HabitOptions {
+  winStay: number;
+  loseCopy: number;
+  loseKeep: number;
+  prior: Record<string, number>;
+}
+
+export function habitChoice(req: Request, o: HabitOptions): string {
+  const rng = makeRng(req.seed);
+  const last = req.memory.at(-1);
+  const fresh = (exclude?: string) => weightedPick(rng, req.order.filter((n) => n !== exclude), o.prior);
+  if (!last) return fresh();
+  const r = rng();
+  if (last.payoff > 0) return r < o.winStay ? last.mine : fresh(last.mine);
+  if (r < o.loseCopy) return last.theirs;
+  if (r < o.loseCopy + o.loseKeep) return last.mine;
+  return fresh(last.mine);
+}
+
+export const habitPolicy = (o: HabitOptions, id = "habit"): Policy => ({
+  id,
+  async decide(requests: Request[]): Promise<Decision[]> {
+    return requests.map((r) => ({ name: habitChoice(r, o), status: "ok" }));
+  },
+});

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent probes</title>
+    <link rel="stylesheet" href="/src/ui/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Agent probes</h1>
+        <p class="sub">One naming-game agent, one scripted history, many samples. Instead of inferring habits from a noisy population, we ask directly: <i>given this history, what do you play?</i> <a href="/">Naming game →</a></p>
+      </header>
+      <details class="explain" open>
+        <summary>How this works</summary>
+        <ol>
+          <li>Each probe fixes the agent's memory to a clear situation, such as "won 5 times in a row playing X".</li>
+          <li>X, Y and Z are placeholders. Each probe is run with them rotated through all 10 names, so no single name's popularity decides the result, and the list order is shuffled for every call.</li>
+          <li>The table counts what the model played: X (its own name), Y (the partner's name, or the main one), Z (a second partner name), or another name entirely.</li>
+        </ol>
+      </details>
+      <section class="controls">
+        <label>Model <select id="model"></select></label>
+        <label>Temperature <input id="temp" type="number" min="0" max="2" step="0.1" value="0.7" /></label>
+        <label>Prompt wording <select id="wording"><option value="game">game</option><option value="plain">plain</option><option value="tally">game + partner tally</option></select></label>
+        <label>Samples per name <input id="k" type="number" min="1" value="10" /></label>
+        <button id="run">Run probes</button>
+      </section>
+      <div id="progress" class="progress" role="progressbar" hidden><div class="fill"></div></div>
+      <p id="status" data-phase="idle" role="status">Idle.</p>
+      <section id="results"></section>
+    </main>
+    <script type="module" src="/src/ui/probe.ts"></script>
+  </body>
+</html>

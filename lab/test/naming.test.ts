@@ -187,3 +187,14 @@ test("strategy counts win-stay, and copy / keep / other after a mismatch", () =>
   const s = strategy(log);
   assert.deepEqual(s, { winStay: 2, win: 2, loseCopy: 1, loseStay: 1, loseOther: 0, lose: 2 });
 });
+
+test("probes: roles rotate through the pool and answers classify", async () => {
+  const { PROBES, roles, classify } = await import("../src/games/probes.ts");
+  const r = roles(letters, 8);
+  assert.deepEqual(r, { x: "X", y: "J", z: "Q" });
+  assert.equal(classify("J", r), "Y");
+  assert.equal(classify("F", r), "other");
+  const m = PROBES.find((p) => p.id === "lose-mixed")!.memory(r.x, r.y, r.z);
+  assert.deepEqual(m.map((h) => h.theirs), ["J", "J", "Q", "J", "Q"]);
+  assert.ok(m.every((h) => h.payoff < 0 && h.mine === "X"));
+});

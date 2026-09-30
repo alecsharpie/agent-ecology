@@ -5,6 +5,7 @@
 //   CONDS=B SEEDS=0-4 node scripts/run-headless.mjs
 //   CONDS=A,B,C,D,E SEEDS=0-4 POOL=nonsense WORDING=plain node scripts/run-headless.mjs
 //   BASELINE=1 CONDS=B node scripts/run-headless.mjs         (individual-bias baseline)
+//   PROBE=Qwen2.5-1.5B-Instruct-q4f16_1-MLC WORDINGS=game,tally node scripts/run-headless.mjs   (probe page)
 //   CASCADE=Qwen2.5-1.5B-Instruct-q4f16_1-MLC TEMP=0.7 N=100 node scripts/run-headless.mjs   (cascade page)
 //   CHROME=/path/to/chrome PROFILE=/tmp/profile ...           (optional)
 import { chromium } from "playwright-core";
@@ -53,6 +54,14 @@ async function withRetries(query, path) {
     }
   }
   throw new Error(`gave up on ${query}`);
+}
+
+if (process.env.PROBE) {
+  for (const model of process.env.PROBE.split(","))
+    for (const wording of (process.env.WORDINGS ?? "game").split(","))
+      await withRetries(new URLSearchParams({ model, wording, temp: process.env.TEMP ?? "0.7", k: process.env.K ?? "10", go: "run" }), "probe.html");
+  console.log("all done");
+  process.exit(0);
 }
 
 if (process.env.CASCADE) {
