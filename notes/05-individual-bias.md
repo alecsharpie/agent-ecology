@@ -39,3 +39,17 @@ Seed 0 of B froze into two camps, Q and T ([01](01-first-llm-seed.md)). Those ar
 
 - One model, one wording, one pool. The pre-registered check reruns this with the "plain" wording and nonsense words.
 - Temperature 0.7. At temperature 0 (condition A) every fresh agent shown the same order would pick the same name.
+
+## Other models (added later)
+
+Same protocol, 200 fresh agents each, "game" wording, letters, T=0.7:
+
+| Model | F | J | K | M | Q | R | T | W | X | Z | Picked the first-listed name |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Qwen2.5 1.5B | 19 | 7 | 2 | 7 | **55** | 15 | **33** | 4 | 29 | 29 | 124 (62%) |
+| Qwen2.5 0.5B | 9 | **40** | 0 | 4 | 31 | 12 | 7 | **64** | 12 | 21 | 99 (50%) |
+| Llama 3.2 1B | 23 | 10 | 17 | **39** | **52** | 11 | 10 | 6 | 3 | 29 | 39 (20%) |
+
+**Each population drifts to its own model's favourites.** Qwen 1.5B populations were led by Q and T in every seed; Qwen 0.5B populations by **W and J**, its two favourites. Llama populations never held a leader long enough to say. Every model has its own "taste" in letters, and its populations inherit it, which fits the content-biased copying in [08](08-probes-and-biased-copying.md).
+
+Position bias also differs by model: Llama picks the first-listed name only 20% of the time (it spreads across first and last positions), Qwen 1.5B 62%.

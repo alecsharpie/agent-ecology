@@ -78,4 +78,13 @@ The plan required every effect to survive a second wording and a fresh name pool
 **What does not survive:**
 - **"Qwen is stubborn" is wrong as stated.** Under the "plain" wording the same model abandons a winning name 88% of the time, as fickle as Llama was. Stubbornness came from the "game" prompt, not the model. Likewise, Llama's fickleness (condition D) might be the prompt's doing; it has only been run with the "game" wording.
 
-The two wordings differ in several ways at once ("name" vs "label", "points" vs plain numbers, and the "game" wording states a goal: "maximise your own total points"). Which difference matters is open. Probes with the plain wording are queued to show which situations flip.
+The two wordings differ in several ways at once ("name" vs "label", "points" vs plain numbers, and the "game" wording states a goal: "maximise your own total points"). Which difference matters is open. Probes with the plain wording show which situations flip:
+
+| Scripted history | "game": plays own X | **"plain"**: plays own X | "plain": something else |
+|---|---|---|---|
+| Won 5 times on X | 96% | 79% | 16% |
+| Won 4 on X, then lost to Y | 96% | 55% | 29% |
+| Lost 5 on X; partners all Y | 92% | 48% | 44% |
+| Lost 5 on X; partners Y, Y, Z, Y, Z | 89% | **20%** | **78%** |
+
+Under the plain wording a single agent still mostly sticks after a clean winning streak, but any loss makes it scatter, not copy (it plays the partner's name at most 11% of the time). In a population, memories are mostly losses, so the scatter compounds into the 12% win-stay measured in the run. Llama under the "game" wording is fickle even in the cleanest case: after 5 straight wins it sticks only 30% of the time.
