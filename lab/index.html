@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Naming game lab</title>
+    <link rel="stylesheet" href="/src/ui/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Naming game</h1>
+        <p class="sub">24 agents, one model, local memory only. Do they agree on a name? Replicates Ashery, Aiello &amp; Baronchelli (2025) with small in-browser models.</p>
+      </header>
+      <section class="controls">
+        <label>Condition <select id="cond"></select></label>
+        <label>Pool <select id="pool"><option value="letters">letters</option><option value="nonsense">nonsense words</option></select></label>
+        <label>Wording <select id="wording"><option value="game">game</option><option value="plain">plain</option></select></label>
+        <label>Seed <input id="seed" type="number" min="0" value="0" /></label>
+        <button id="run">Run seed</button>
+        <button id="baseline" class="secondary">Individual baseline (200 fresh agents)</button>
+        <button id="stop" class="secondary" disabled>Stop</button>
+      </section>
+      <p id="status" data-phase="idle" role="status">Idle.</p>
+      <section class="panels">
+        <figure>
+          <figcaption>Population, current round. Each cell is one agent and the name it just played. Filled cells played the round's most common name.</figcaption>
+          <div id="grid" class="grid"></div>
+        </figure>
+        <figure>
+          <figcaption>Consensus: share of each round's plays on that round's most common name. Dashed line is the 0.9 convergence threshold. Chance with 10 names is about 0.2.</figcaption>
+          <div id="chart" class="chart"></div>
+        </figure>
+      </section>
+      <section>
+        <h2 id="detail-title">Calls</h2>
+        <div id="detail"></div>
+      </section>
+    </main>
+    <script type="module" src="/src/ui/main.ts"></script>
+  </body>
+</html>

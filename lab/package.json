@@ -1,0 +1,22 @@
+{
+  "name": "agent-ecology-lab",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --no-warnings --test test/*.test.ts",
+    "rule": "node --experimental-strip-types --no-warnings scripts/run-rule.ts"
+  },
+  "dependencies": {
+    "@mlc-ai/web-llm": "^0.2.85"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "playwright-core": "^1.57.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  }
+}
