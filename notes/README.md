@@ -1,5 +1,7 @@
 # Experiment notes
 
+**New here? Read the interactive explainer first:** [`article/how-crowds-make-up-their-minds.html`](../article/how-crowds-make-up-their-minds.html).
+
 ## What we've learned so far (plain language)
 
 ![Consensus by condition](figures/consensus-by-condition.svg)
@@ -35,4 +37,4 @@ Working notes, in the order they were written. [`journal.md`](journal.md) is the
 | 07 | [Critical mass depends on memory length](07-tipping-vs-memory.md) | done (CPU) |
 | 08 | [Probes: why LLM agents don't converge, and why Q wins](08-probes-and-biased-copying.md) | done (exploratory) |
 | 09 | [Information cascades with an LLM](09-llm-cascades.md) | done: v1 chance level; v2 conformity curve |
-| 10 | [Stubborn vs fickle: Qwen, greedy Qwen, Llama](10-stubborn-vs-fickle.md) | A: 2, B: 3, C: 2, D: 2 seeds |
+| 10 | [Stubborn vs fickle: Qwen, greedy Qwen, Llama](10-stubborn-vs-fickle.md) | full grid: 5 seeds each of A–E, 0/25 converged (see journal) |

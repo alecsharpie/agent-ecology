@@ -9,7 +9,7 @@ The first experiment replicates Ashery, Aiello & Baronchelli, "Emergent social c
 - [`lab/`](lab/): the code. It's Vite + TypeScript, with WebLLM for inference.
 - `agent-ecology.html`: the Agent Ecology Field Guide.
 
-Start with [`notes/README.md`](notes/README.md): it opens with a plain-language summary of what we've learned so far.
+Start with the interactive explainer, [`article/how-crowds-make-up-their-minds.html`](article/how-crowds-make-up-their-minds.html), or [`notes/README.md`](notes/README.md): it opens with a plain-language summary of what we've learned so far.
 
 ## Pages (with `npm run dev`)
 

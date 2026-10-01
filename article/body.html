@@ -1,0 +1,372 @@
+<div class="wrap">
+
+<header class="hero col">
+  <div class="eyebrow">Agent ecology · Lab notes, made readable</div>
+  <h1>How Crowds Make Up Their Minds</h1>
+  <p class="dek">Twenty-four small language models play a game with one rule: match your partner. Simple rule-following agents agree within twenty rounds. The language models never do. What's missing turns out to be one ordinary habit.</p>
+</header>
+
+<figure class="page" id="fig-hero">
+  <div class="panel">
+    <div class="sim">
+      <div>
+        <div class="agents" id="hero-grid" aria-label="24 agents"></div>
+        <div class="stat-line" id="hero-stat"></div>
+      </div>
+      <div>
+        <div class="chips" role="group" aria-label="Which agents" id="hero-chips">
+          <button type="button" data-k="rule" aria-pressed="true">Agents that copy</button>
+          <button type="button" data-k="qwen" aria-pressed="false">Agents with Qwen 1.5B's habits</button>
+        </div>
+        <div class="chart rel" id="hero-chart" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+  <figcaption><b>A convention forming, live.</b> Each square is an agent and the name it just played. Every round agents are paired at random, and a pair scores only if both pick the same name. On the left are agents that copy what their partners play. They lock onto one name within about twenty rounds, and nobody chooses which. Switch to agents with the habits we measured in a 1.5-billion-parameter language model and the population stalls at a split. These are simulations, re-run in your browser each time. Real model runs come later.</figcaption>
+</figure>
+
+<div class="col">
+  <div class="byline">
+    <div><span class="k">Author</span>Alec Sharpie, with Claude</div>
+    <div><span class="k">Published</span>October 1, 2026</div>
+    <div><span class="k">Data</span>25 pre-registered runs plus probes and cascade games, about 35,000 model calls</div>
+    <div><span class="k">Code</span><a href="https://github.com/alecsharpie/agent-ecology">github.com/alecsharpie/agent-ecology</a></div>
+  </div>
+
+  <ul class="toc" aria-label="Contents">
+    <li><a href="#emergence">1. A game with one rule</a></li>
+    <li><a href="#copying">2. Agents that copy</a></li>
+    <li><a href="#playground">3. A habit playground</a></li>
+    <li><a href="#llms">4. What small language models do</a></li>
+    <li><a href="#missing">5. The missing habit</a></li>
+    <li><a href="#bias">6. Where the winning name comes from</a></li>
+    <li><a href="#tipping">7. Tipping points</a></li>
+    <li><a href="#cascades">8. Herding into the wrong answer</a></li>
+    <li><a href="#classics">9. Two more classics</a></li>
+    <li><a href="#learned">10. What we learned</a></li>
+    <li><a href="#methods">Methods, predictions and mistakes</a></li>
+  </ul>
+
+  <h2 id="emergence">1. A game with one rule</h2>
+  <p>Why do we drive on the right? Not because anyone worked out that the right is better. Enough people did it that doing anything else became costly, and then everyone did it. A <em>convention</em> is a shared answer to a question with no right answer, and nobody in particular has to pick it. It can appear from many private, local interactions, and that is what <em>emergence</em> means: a pattern in the whole that no part designed.</p>
+  <p class="note">The naming game was introduced as a model of how language conventions spread (Steels 1995; Baronchelli et al. 2006). Centola and colleagues ran it with people in 2015 and 2018.</p>
+  <p>The <strong>naming game</strong> is the smallest laboratory for this. A population of agents is paired up at random, round after round. In each pair both agents secretly pick a name from the same list. If they pick the same one, both score; if not, both lose a little. Nobody is told which name to use, and nobody sees the whole population. Each agent remembers only its own last few games.</p>
+  <p>In 2025, Ashery, Aiello and Baronchelli put large language models into this game and found that populations of them do settle on shared names. They also found that the population can favour a name no single model prefers, and that a small committed minority can overturn an established convention. We tried to reproduce that with models small enough to run in a browser tab: Qwen2.5 at 0.5 and 1.5 billion parameters, and Llama 3.2 at 1 billion. This is the exact message every agent received:</p>
+</div>
+
+<figure class="col" id="fig-prompt">
+  <div class="prompt">
+    <div class="role">System</div>
+    <pre>You are playing a repeated game with a series of partners. In each round you and your partner simultaneously pick one name from this list: [W, T, K, F, J, Q, Z, M, R, X].
+If you both pick the SAME name, you each get +100 points. If you pick DIFFERENT names, you each get -50 points.
+Your goal is to maximise your own total points. You cannot talk to your partner.</pre>
+    <div class="role">User</div>
+    <pre>Your recent rounds:
+Round 1: you picked T, your partner picked T, you got +100 points.
+Round 2: you picked T, your partner picked Q, you got -50 points.
+Round 3: you picked T, your partner picked F, you got -50 points.
+Round 4: you picked T, your partner picked F, you got -50 points.
+Round 5: you picked T, your partner picked Q, you got -50 points.
+
+Which name do you pick this round? Answer with JSON: {"name": "&lt;one name from the list&gt;"}.</pre>
+    <div class="answer">The model answered <code>{ "name": "T" }</code>, its fifth T in a row after four straight losses. This is agent 5, round 20, of a real run. You can find it in the replay in section 4.</div>
+  </div>
+  <figcaption><b>The whole world of one agent.</b> 24 agents, 10 names, a memory of 5 rounds, 40 rounds per run. The name list is shuffled for every call, because small models are strongly drawn to whatever is listed first. Answers are forced into valid JSON, so every reply is a real name.</figcaption>
+</figure>
+
+<div class="col">
+  <h2 id="copying">2. Agents that copy</h2>
+  <p>Before any language model, it helps to see what success looks like. Our reference agents follow one rule: <em>play the name your last five partners played most often.</em> They see exactly what a language-model agent sees and nothing more.</p>
+</div>
+
+<figure class="col" id="fig-rule">
+  <div class="chart rel" id="chart-rule"></div>
+  <figcaption><b>Rule agents converge.</b> The share of each round's plays on that round's most common name, averaged over 200 simulated populations. With 10 names, chance is about 20%. 195 of 200 populations pass our "converged" bar (above 90% for five rounds running), at a median of round 19.</figcaption>
+</figure>
+
+<div class="col">
+  <p>The curve starts flat. For a while every name has a few supporters and nothing moves much. Then one name, by luck, gets slightly more partners talking about it. Agents who copy their partners start playing it, which gives it more partners still, and the curve shoots up. That positive feedback is the engine of every convention in this article. Keep it in mind, because it is exactly what the language models lack.</p>
+
+  <h2 id="playground">3. A habit playground</h2>
+  <p>Copying the majority of your last five partners is one strategy among many. To compare agents, including language models, it helps to boil any strategy down to three habits about the last round only:</p>
+  <ul>
+    <li><strong>Repeat after a win.</strong> If I matched my partner, how often do I play the same name again?</li>
+    <li><strong>Copy after a loss.</strong> If I didn't match, how often do I switch to my partner's name?</li>
+    <li><strong>Explore after a loss.</strong> How often do I try some other name at random? Whatever is left over, I keep my own name.</li>
+  </ul>
+  <p>Below, a population of 24 agents plays with whatever habits you set. The presets are the habits we <em>measured</em> in real language-model runs (section 4). Try them, then try to find the recipe that works.</p>
+</div>
+
+<figure class="page" id="fig-playground">
+  <div class="panel">
+    <div class="chips" role="group" aria-label="Presets" id="pg-presets" style="margin-bottom:14px"></div>
+    <div class="controls">
+      <label for="pg-ws"><span class="row">Repeat after a win <span class="val" id="pg-ws-v"></span></span><input id="pg-ws" type="range" min="0" max="1" step="0.01" /></label>
+      <label for="pg-copy"><span class="row">Copy after a loss <span class="val" id="pg-copy-v"></span></span><input id="pg-copy" type="range" min="0" max="1" step="0.01" /></label>
+      <label for="pg-explore"><span class="row">Explore after a loss <span class="val" id="pg-explore-v"></span></span><input id="pg-explore" type="range" min="0" max="1" step="0.01" /></label>
+      <button type="button" class="primary" id="pg-restart">Restart</button>
+    </div>
+    <div class="sim">
+      <div>
+        <div class="agents" id="pg-grid"></div>
+        <div class="stat-line" id="pg-stat"></div>
+      </div>
+      <div class="chart rel" id="pg-chart"></div>
+    </div>
+  </div>
+  <figcaption><b>Three habits decide everything.</b> Squares in the three colours are the three most-played names this round, so a colour follows a name. The curve is the share of plays on the most common name, round by round, over 120 rounds. Copy plus keep plus explore can't exceed 100%, so the sliders adjust each other. Things to try: set "repeat after a win" below 1 and watch consensus hit a ceiling. Set "copy" to 0.95 and watch pairs keep swapping names.</figcaption>
+</figure>
+
+<div class="col">
+  <p>A few rules of thumb fall out of playing with it, and a systematic sweep confirms them (section 5). <strong>Always repeat a winning name</strong>: any wandering after a win puts a ceiling on agreement. <strong>Copy sometimes, not always</strong>: copying 30–50% of the time works best. At 90%, two mismatched agents both copy each other, swap names and mismatch again. <strong>Almost never explore</strong>: with ten names, even 10% random exploration keeps re-seeding rival names faster than one can win.</p>
+
+  <h2 id="llms">4. What small language models do</h2>
+  <p>We ran five pre-registered conditions with five seeds each: Qwen2.5 1.5B with sampling (temperature 0.7) and with greedy decoding (each agent an exact clone); Qwen2.5 0.5B; Llama 3.2 1B; and a mixed population of half Qwen and half Llama. That's 24,000 model calls, all on a laptop GPU through WebGPU.</p>
+  <p class="note">We wrote down predictions before the runs, including "the 1.5B model converges in most seeds". They are graded in the methods section. Most were wrong.</p>
+  <p><strong>None of the 25 populations converged.</strong> Below you can replay any of them. Click an agent to see the exact prompt it received that round.</p>
+</div>
+
+<figure class="page" id="fig-replay">
+  <div class="panel">
+    <div class="controls">
+      <label for="rp-select" style="min-width:16rem">Run <select id="rp-select"></select></label>
+      <button type="button" id="rp-play" class="primary">Play</button>
+      <label for="rp-scrub" style="flex:1; min-width:12rem"><span class="row">Round <span class="val" id="rp-round"></span></span><input id="rp-scrub" type="range" min="0" max="39" value="39" /></label>
+    </div>
+    <div class="legend" id="rp-legend"></div>
+    <div class="sim">
+      <div>
+        <div class="agents" id="rp-grid"></div>
+        <div class="stat-line" id="rp-stat"></div>
+      </div>
+      <div>
+        <div class="chart rel" id="rp-chart"></div>
+        <div id="rp-prompt"></div>
+      </div>
+    </div>
+  </div>
+  <figcaption><b>Real runs, every decision inspectable.</b> ✓ marks an agent that matched its partner this round. The prompt shown is rebuilt exactly from the run log: that agent's shuffled list and its last five rounds. Qwen 1.5B populations split into two camps, Q and T, and stay there. Llama's never hold on to anything. Greedy Qwen freezes solid: seed 0 has exactly the same counts at rounds 20, 30 and 40.</figcaption>
+</figure>
+
+<figure class="page" id="fig-conditions">
+  <div class="legend" id="cond-legend"></div>
+  <div class="chart rel" id="chart-conditions"></div>
+  <figcaption><b>Every condition stalls below the bar.</b> Share of plays on each round's most common name, mean over seeds. Grey is the rule agents from section 2. The "tally" line is an exploratory variant: the same prompt plus one sentence counting what recent partners played. It helps, but not enough.</figcaption>
+</figure>
+
+<div class="col">
+  <h2 id="missing">5. The missing habit</h2>
+  <p>Why do the language models stall? The most direct way to find out is to stop watching populations and ask one agent about one situation. We gave the model a scripted memory and sampled its answer 100 times, rotating the names through all ten letters and shuffling the list every call.</p>
+</div>
+
+<figure class="col" id="fig-probes">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Scripted last five rounds</th><th class="num">Plays its own name again</th><th class="num">Switches to the partner's name</th><th class="num">Something else</th></tr></thead>
+      <tbody id="probe-rows"></tbody>
+    </table>
+  </div>
+  <figcaption><b>Qwen 1.5B repeats itself whatever happens.</b> After five straight losses to partners who all played the same other name, it plays its own name again 92% of the time and adopts the partner's 1% of the time. It isn't weighing the payoffs or reading its partners. It continues the visible pattern "you picked X, you picked X, …". Copying patterns from context is something language models are very good at.</figcaption>
+</figure>
+
+<div class="col">
+  <p>Now we can put every model on one map. The background below is a sweep of simple habit agents, like the playground, run 16 times per cell for 60 rounds: how much agreement each combination of "repeat after a win" and "copy after a loss" reaches. On top are the habits we measured in each real run.</p>
+</div>
+
+<figure class="page" id="fig-habitmap">
+  <div class="chart rel" id="chart-habitmap"></div>
+  <figcaption><b>A map of habits.</b> Background: agreement over the last 10 of 60 rounds for agents with no exploration (darker means more agreement). Conventions only form in the top band, where agents always repeat a winning name and copy 20–70% of the time. Dots: language-model populations, placed by their measured habits, pooled across seeds. Every one of them also explores after losses (16–92% of the time), which this map leaves out and which only pushes them further from agreement.</figcaption>
+</figure>
+
+<div class="col">
+  <p>The map tells a sharper story than "small models are bad at this". Each model, under each prompt, fails in its own way:</p>
+  <ul>
+    <li><strong>Qwen 1.5B is too stubborn.</strong> It sits high on "repeat after a win", but far left on "copy". Camps form in the first few rounds and never dissolve. With greedy decoding it is even more extreme, and the populations freeze solid.</li>
+    <li><strong>Llama 1B is too fickle.</strong> It drops even a winning name two times out of three, so nothing accumulates.</li>
+    <li><strong>Qwen 0.5B copies the most</strong>, about 22% of the time, more than its larger sibling. But it also abandons winners half the time.</li>
+  </ul>
+  <p>What no model does, under any wording, is the thing every converging population needs: <strong>adopt a partner's name after losing to it</strong>.</p>
+
+  <div class="callout">
+    <span class="eyebrow">A correction we had to make</span>
+    <p>We first wrote this up as "Qwen is stubborn, Llama is fickle", a difference between models. Then we ran the check the plan required: the same game with a second wording of the prompt. With the second wording the same Qwen model abandons a winning name 88% of the time, as fickle as Llama. Stubborn or fickle depends on the model <em>and</em> the prompt. That's why the "plain wording" dot sits next to Llama on the map. What held under every wording and name list we tried: <strong>copying stays rare</strong>.</p>
+  </div>
+
+  <h2 id="bias">6. Where the winning name comes from</h2>
+  <p>The populations never fully agree, but they do lean. In four of five Qwen 1.5B runs, Q led. Where does Q come from? We asked 200 fresh agents, each with an empty memory and a freshly shuffled list, to pick a name.</p>
+</div>
+
+<figure class="page" id="fig-bias">
+  <div class="chart rel" id="chart-baselines"></div>
+  <figcaption><b>Each model has favourite letters, and its populations drift to them.</b> Bars: how often 200 fresh agents with no history picked each name (equal liking would be 20 each). Coloured bars mark the names that led that model's populations. Qwen 1.5B likes Q and T, and its populations were led by Q or T in all 10 runs (conditions A and B). Qwen 0.5B likes W and J, and W and J were the top two in all 5 of its runs. Llama's taste is flatter and its populations never hold a leader.</figcaption>
+</figure>
+
+<div class="col">
+  <p>So the group's lean is inherited from individual taste. But the group <em>amplifies</em> it: Q is 28% of solo picks, yet it led most populations. The mechanism shows up when we ask <em>whom agents copy</em>. Split every "I lost last round" moment by what the partner played:</p>
+</div>
+
+<figure class="col" id="fig-copybias">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Qwen 1.5B runs</th><th class="num">Copied the partner when the partner played Q</th><th class="num">…when the partner played another name</th></tr></thead>
+      <tbody>
+        <tr><td>Standard prompt, seeds 0 / 1 / 2</td><td class="num">6% / 7% / 7%</td><td class="num">2% / 3% / 3%</td></tr>
+        <tr><td>With partner-tally line, seeds 0 / 1</td><td class="num"><b>18% / 19%</b></td><td class="num">5% / 7%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figcaption><b>Agents copy names they already like.</b> Copying is 2.5–3 times more likely when the partner's name is the model's favourite. Researchers in cultural evolution call this content-biased transmission: social learning filtered by prior taste. Every interaction nudges the population toward Q slightly more than toward anything else.</figcaption>
+</figure>
+
+<div class="col">
+  <p>The same amplification appears in the rule agents with no language model at all. We gave each rule agent a weak lean toward F: on its own it picks F 12% of the time instead of about 10%. F then won 26% of the populations. <strong>A preference too weak to notice in any individual more than doubles at the level of the group.</strong> The paper we replicated reports group biases that no individual holds. With small models, we found something simpler but just as important: individual biases that the group magnifies.</p>
+
+  <h2 id="tipping">7. Tipping points</h2>
+  <p>Once a convention exists, how many stubborn holdouts does it take to overturn it? Centola and colleagues found about 25% in groups of people. Our language-model populations never formed a convention to overturn, so here we use the rule agents. Below, a population first settles on a name (blue). Then a committed minority (dashed outlines) starts playing a new name (orange) and never stops.</p>
+</div>
+
+<figure class="page" id="fig-tipping">
+  <div class="panel">
+    <div class="controls">
+      <label for="tp-k"><span class="row">Committed agents <span class="val" id="tp-k-v"></span></span><input id="tp-k" type="range" min="0" max="10" step="1" value="4" /></label>
+      <label for="tp-mem"><span class="row">Memory (rounds) <span class="val" id="tp-mem-v"></span></span><input id="tp-mem" type="range" min="2" max="12" step="1" value="5" /></label>
+      <button type="button" class="primary" id="tp-run">Run again</button>
+    </div>
+    <div class="sim">
+      <div>
+        <div class="agents" id="tp-grid"></div>
+        <div class="stat-line" id="tp-stat"></div>
+      </div>
+      <div class="chart rel" id="tp-chart"></div>
+    </div>
+  </div>
+  <figcaption><b>Try 4 committed agents, then 5.</b> The line is the share of plays on the new name after the minority starts (round 0). With memory 5, four committed agents win about one run in four, and five almost always win. Longer memory makes the convention harder to move.</figcaption>
+</figure>
+
+<figure class="col" id="fig-critical">
+  <div class="chart rel" id="chart-critical"></div>
+  <figcaption><b>Memory is inertia.</b> Share of 100 settled populations that flipped within 40 rounds, by number of committed agents (out of 24), for different memory lengths. Each curve is a cliff: from almost never to almost always within one or two agents. The cliff moves right as memory grows: 3 agents (13%) at memory 3, 5 (21%) at memory 5, 6 (25%) at memory 8, 7 (29%) at memory 12. With a memory of 1 or 2, most populations never settle at all.</figcaption>
+</figure>
+
+<div class="col">
+  <h2 id="cascades">8. Herding into the wrong answer</h2>
+  <p>The naming game rewards following the crowd, since any shared name will do. Sometimes following the crowd is a mistake. The classic demonstration is the <strong>urn game</strong> (Bikhchandani, Hirshleifer and Welch 1992; Anderson and Holt 1997). A coin picks one of two urns: one holds two red balls and one blue, the other two blue and one red. Players go one at a time. Each privately draws a ball, which points to the right urn two times in three. Each sees everyone's earlier <em>guesses</em>, but not their balls, then guesses publicly.</p>
+  <p>A perfectly rational player follows their own ball until the earlier guesses lead by two, then follows the crowd whatever they drew. That's correct for them, but their guess now carries no information, so the next player is in the same spot, and so on forever. This is an <strong>information cascade</strong>. With ten players, about one game in five locks into the wrong urn, even though everyone reasons perfectly. Our simulation gives 18.7%, against a theoretical 19.2%.</p>
+  <p class="note">Naming the urns "A" and "B" left Qwen 1.5B at chance: its first guess matched its own ball 52% of the time. Naming them by colour ("the red urn") fixed that. Capability floors decide which social effects you can even observe.</p>
+  <p>We put language models in the players' seats, with the urns named by colour. Then we asked how the chance of going against your own ball depends on how many earlier players disagreed with it:</p>
+</div>
+
+<figure class="page" id="fig-conformity">
+  <div class="legend" id="conf-legend"></div>
+  <div class="chart rel" id="chart-conformity"></div>
+  <figcaption><b>Sampled models slide toward the crowd; greedy ones switch in a step.</b> 100 games of 10 players each, per model. The horizontal axis is the number of earlier guesses against my ball minus the number for it. A rational player never gives in until the crowd leads by 2. Sampled models give in gradually, already about half the time when the crowd leads by one. Greedy Qwen switches at exactly the rational threshold.</figcaption>
+</figure>
+
+<div class="col">
+  <p>Gradual conformity sounds mild. Its effect on the group is not. Below, you can simulate 2,000 ten-player games using each player type's measured behaviour: how often player 1 follows its own ball, and the conformity curve above.</p>
+</div>
+
+<figure class="page" id="fig-cascade-sim">
+  <div class="panel">
+    <div class="chips" role="group" aria-label="Player type" id="cs-types" style="margin-bottom:14px"></div>
+    <div class="two">
+      <div id="cs-games" aria-label="Sample games"></div>
+      <div id="cs-out"></div>
+    </div>
+  </div>
+  <figcaption><b>More information, worse answers.</b> Each row is one simulated game: the true urn, then each player's ball (dot) and guess (letter). Players simulated from the measured Qwen and Llama behaviour are wrong more often than players who ignore everyone. The greedy Qwen model herds with a perfectly rational-looking rule, but its first player answered "blue" in all 100 real games, and the crowd faithfully amplifies that one quirk. In the real runs its last three players were all wrong in 41% of games, more than twice the rational rate.</figcaption>
+</figure>
+
+<div class="col">
+  <p>That last case is the cleanest lesson in the whole project: <strong>a sensible rule for using other people's choices does not help if the first choices are systematically off. It amplifies them.</strong> Every player after the first saw more information than the first, and the group ended up worse than if nobody had looked.</p>
+
+  <h2 id="classics">9. Two more classics</h2>
+  <p>Two older results round out the picture, both about the gap between what individuals want and what the group produces. Both use simple rules, no language models.</p>
+  <h3>Schelling's segregation model (1971)</h3>
+  <p>Two kinds of agents live on a grid. Each is content if at least a share <em>t</em> of its neighbours are its own kind; discontented agents move to a random empty cell. At <em>t</em> = 30%, every agent is happy to be a one-in-three minority. Nobody wants segregation.</p>
+</div>
+
+<figure class="page" id="fig-schelling">
+  <div class="panel">
+    <div class="controls">
+      <label for="sc-tol"><span class="row">Content if at least this share alike <span class="val" id="sc-tol-v"></span></span><input id="sc-tol" type="range" min="0" max="0.9" step="0.05" value="0.3" /></label>
+      <button type="button" class="primary" id="sc-run">New city</button>
+    </div>
+    <div class="two">
+      <canvas id="sc-canvas" width="480" height="480" aria-label="Schelling grid" style="width:100%; max-width:480px; aspect-ratio:1; border-radius:8px"></canvas>
+      <div>
+        <div class="chart rel" id="sc-chart"></div>
+        <div class="stat-line" id="sc-stat"></div>
+      </div>
+    </div>
+  </div>
+  <figcaption><b>Mild preferences, strong segregation.</b> A 40×40 city, 90% occupied. The line tracks the average share of same-kind neighbours, which starts near 50% in a random city. At 30% tolerance it climbs past 70%. At 90%, almost nobody can be content, everyone keeps moving, and the city stays mixed.</figcaption>
+</figure>
+
+<div class="col">
+  <h3>The El Farol bar (Arthur 1994)</h3>
+  <p>A hundred people decide each week whether to go to a bar that is fun only if 60 or fewer turn up. There's no right forecast: if everyone expects a quiet night, everyone goes. Each agent holds a few simple forecasting rules ("same as last week", "average of the last four weeks", "mirror of last week") and uses whichever has been most accurate lately.</p>
+</div>
+
+<figure class="page" id="fig-elfarol">
+  <div class="panel">
+    <div class="chips" role="group" aria-label="Population" id="ef-types" style="margin-bottom:12px"></div>
+    <div class="chart rel" id="ef-chart"></div>
+    <div class="stat-line" id="ef-stat"></div>
+  </div>
+  <figcaption><b>Diversity is the mechanism.</b> Weekly attendance over 120 weeks, simulated in your browser. With diverse rules, attendance hovers around the capacity of 60 although no rule knows that number. Give everyone the same rule and they all make the same decision: 100 or 0, every week, and nobody ever enjoys a seat. This is the "clone population" question from the naming game, with the opposite answer: here clones do worst.</figcaption>
+</figure>
+
+<div class="col">
+  <h2 id="learned">10. What we learned</h2>
+  <ol class="takeaways">
+    <li><span><strong>Emergence needs a feedback loop.</strong> Conventions form when agents adopt what they see others doing, which makes it more visible, which gets it adopted more. Remove copying and nothing emerges, however capable the agents.</span></li>
+    <li><span><strong>Small language models don't copy their partners.</strong> They mostly repeat their own past choice, or wander at random, depending on the prompt. Not one of 25 populations converged.</span></li>
+    <li><span><strong>Habits belong to model and prompt together.</strong> The same model was stubborn under one wording and fickle under another. Any claim about "how a model behaves socially" has to survive a change of wording.</span></li>
+    <li><span><strong>Groups amplify individual biases.</strong> Each model's populations drifted to its own favourite letters, because agents copy names they already like more readily. A small individual tilt becomes the group's direction.</span></li>
+    <li><span><strong>Tipping points are cliffs.</strong> Overturning a convention takes a fairly fixed fraction of committed agents, 13–29% depending on memory. Below that nothing happens; just above it the flip is nearly certain.</span></li>
+    <li><span><strong>Social information can make a group worse.</strong> Language-model players who conform gradually end up less accurate than players who ignore each other. Even perfectly rational herding amplifies a biased first guess.</span></li>
+  </ol>
+
+  <hr class="section" />
+  <h2 id="methods">Methods, predictions and mistakes</h2>
+  <p><strong>Setup.</strong> All models ran locally in Chrome on WebGPU through WebLLM, as 4-bit quantised builds, about 0.3–1.2 seconds per call on an M3 laptop. Every call was logged: the shuffled list, the raw output, the parsed name, the payoff and the timing. All metrics come from those logs, so every number here can be recomputed without running a model. Decoding was constrained to a JSON schema whose only allowed values are the ten names, and there were zero parse failures in about 35,000 calls.</p>
+  <p><strong>Pre-registration.</strong> Five predictions were frozen in the repository before any model result was analysed (the first seed was at round 6 of 40 when they were frozen, a fact we logged at the time).</p>
+</div>
+
+<figure class="col" id="fig-predictions">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Prediction</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>1. Qwen 1.5B (T=0.7) converges in most seeds within 40 rounds</td><td><b>Wrong.</b> 0 of 5.</td></tr>
+        <tr><td>2. Greedy clones converge faster, always on the same name</td><td><b>Wrong.</b> 0 of 5 converged, and the leaders split: T in 3, Q in 2.</td></tr>
+        <tr><td>3. Qwen 0.5B mostly fails to converge</td><td><b>Right, but trivially.</b> Every condition failed.</td></tr>
+        <tr><td>4. Winning names differ from the individual baseline</td><td><b>Can't be graded as written</b>: no population produced a winner. Exploratory: leaders track individual favourites, amplified.</td></tr>
+        <tr><td>5. The critical mass is between 10% and 30%</td><td><b>Can't be tested on the models</b>: nothing to tip. Rule agents: 21% at memory 5.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</figure>
+
+<div class="col">
+  <p><strong>A measurement caveat.</strong> Our "converged" bar (above 90% on one name for five rounds) may be out of reach for any agent that samples its answers. An agent that drops a winning name 14% of the time leaves about 3 of 24 agents off-convention every round, and the bar allows at most 2. We kept the pre-registered rule and report the level of agreement alongside it.</p>
+  <p><strong>Mistakes we caught.</strong> A dev-server setting meant results saved after start-up were never served, which would have silently restarted interrupted runs from round 1. One cascade run was hot-reloaded mid-way by an edit to its code; its last 12 games used a changed prompt and are excluded. A first back-of-envelope theory for cascades was off by 2.5 standard errors, because a cascade formed by the last two players has nobody after them to reveal it. A metric helper passed an array index where it expected a threshold. Tests caught that one. All of this is in the repository's journal.</p>
+  <p><strong>Limitations.</strong> Three small models, one name pool of letters (and one run with nonsense words), 40 rounds per run, mostly five seeds per condition. The paper we replicated used much larger models and longer games; our results say what happens at the small end, not that the paper is wrong.</p>
+
+  <h3>References</h3>
+  <ol class="refs">
+    <li>Ashery, A. F., Aiello, L. M., &amp; Baronchelli, A. (2025). Emergent social conventions and collective bias in LLM populations. <em>Science Advances</em>, 11(20).</li>
+    <li>Baronchelli, A., Felici, M., Loreto, V., Caglioti, E., &amp; Steels, L. (2006). Sharp transition towards shared vocabularies in multi-agent systems. <em>Journal of Statistical Mechanics</em>.</li>
+    <li>Centola, D., &amp; Baronchelli, A. (2015). The spontaneous emergence of conventions: An experimental study of cultural evolution. <em>PNAS</em>, 112(7).</li>
+    <li>Centola, D., Becker, J., Brackbill, D., &amp; Baronchelli, A. (2018). Experimental evidence for tipping points in social convention. <em>Science</em>, 360(6393).</li>
+    <li>Bikhchandani, S., Hirshleifer, D., &amp; Welch, I. (1992). A theory of fads, fashion, custom, and cultural change as informational cascades. <em>Journal of Political Economy</em>, 100(5).</li>
+    <li>Anderson, L. R., &amp; Holt, C. A. (1997). Information cascades in the laboratory. <em>American Economic Review</em>, 87(5).</li>
+    <li>Schelling, T. C. (1971). Dynamic models of segregation. <em>Journal of Mathematical Sociology</em>, 1(2).</li>
+    <li>Arthur, W. B. (1994). Inductive reasoning and bounded rationality. <em>American Economic Review</em>, 84(2).</li>
+    <li>Boyd, R., &amp; Richerson, P. J. (1985). <em>Culture and the Evolutionary Process</em>. University of Chicago Press. (Content-biased transmission.)</li>
+  </ol>
+  <p style="font: 400 0.84rem/1.5 var(--ui); color: var(--ink-2)">Every experiment, raw log and note is in <a href="https://github.com/alecsharpie/agent-ecology">github.com/alecsharpie/agent-ecology</a>. The lab runs in a browser: <code>cd lab &amp;&amp; npm install &amp;&amp; npm run dev</code>.</p>
+</div>
+
+</div>
