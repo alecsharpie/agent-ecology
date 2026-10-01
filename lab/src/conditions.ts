@@ -3,9 +3,10 @@
 export const QWEN_15 = "Qwen2.5-1.5B-Instruct-q4f16_1-MLC";
 export const QWEN_05 = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
 export const LLAMA_1 = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
+export const QWEN_7 = "Qwen2.5-7B-Instruct-q4f16_1-MLC";
 
 export interface Condition {
-  id: "A" | "B" | "C" | "D" | "E";
+  id: "A" | "B" | "C" | "D" | "E" | "F";
   label: string;
   /** Models, split evenly across the population in this order (agent i gets models[i % len]). */
   models: string[];
@@ -19,6 +20,8 @@ export const CONDITIONS: Condition[] = [
   { id: "C", label: "Qwen2.5 0.5B, T=0.7", models: [QWEN_05], temperature: 0.7, purpose: "Is there a capability floor?" },
   { id: "D", label: "Llama 3.2 1B, T=0.7", models: [LLAMA_1], temperature: 0.7, purpose: "Different model family" },
   { id: "E", label: "Half Qwen 1.5B, half Llama 1B, T=0.7", models: [QWEN_15, LLAMA_1], temperature: 0.7, purpose: "Mixed population" },
+  // Added after the pre-registered grid: the size ladder (exploratory, not graded).
+  { id: "F", label: "Qwen2.5 7B, T=0.7", models: [QWEN_7], temperature: 0.7, purpose: "Size ladder (exploratory): the first size whose probes show copying" },
 ];
 
 export const PARAMS = { agents: 24, rounds: 40, memory: 5, baselineAgents: 200 } as const;

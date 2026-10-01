@@ -21,6 +21,8 @@
 
 9. **Stubborn or fickle depends on the prompt as much as the model** ([10](10-stubborn-vs-fickle.md)). Under one wording Qwen 1.5B is stubborn: it repeats its name even after five losses, so camps freeze. Under another it's fickle, abandoning winning names 88% of the time. Llama 1B and Qwen 0.5B each sit somewhere else again. The one habit that never changes: **no model, under any wording, copies its partners more than about a fifth of the time**, and that's the ingredient every converging population needs. (I first attributed stubbornness to the model; the prompt-overlap check corrected that.)
 
+10. **Copying switches on between 3B and 7B, and bigger models converge** ([11](11-size-ladder.md)). After five losses to partners who all played Y, Qwen 1.5B copies 1% of the time, Qwen 7B 63%, Gemma 4 26B 98%. A population of Gemma 26B agents converged on one name by round 21, the same S-curve as the rule agents. Its habits (always repeat a winner, copy 26% after a loss, almost never explore) sit exactly where the habit map said conventions form.
+
 ## Index
 
 Working notes, in the order they were written. [`journal.md`](journal.md) is the running log, and each experiment gets its own file.
@@ -38,3 +40,4 @@ Working notes, in the order they were written. [`journal.md`](journal.md) is the
 | 08 | [Probes: why LLM agents don't converge, and why Q wins](08-probes-and-biased-copying.md) | done (exploratory) |
 | 09 | [Information cascades with an LLM](09-llm-cascades.md) | done: v1 chance level; v2 conformity curve |
 | 10 | [Stubborn vs fickle: Qwen, greedy Qwen, Llama](10-stubborn-vs-fickle.md) | full grid: 5 seeds each of A–E, 0/25 converged (see journal) |
+| 11 | [Size ladder: where copying switches on](11-size-ladder.md) | probes 1.5B–31B; Gemma 26B population converged; more running |

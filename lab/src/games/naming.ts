@@ -27,11 +27,20 @@ export const payoff = (a: string, b: string) => (a === b ? PAYOFF.match : PAYOFF
 /** The last `m` memories, oldest first. */
 export const window = (memory: readonly Memory[], m: number) => (m <= 0 ? [] : memory.slice(-m));
 
-export type WordingId = "game" | "plain" | "tally";
+export type WordingId = "game" | "plain" | "tally" | "partners";
 
 const historyLines = (memory: readonly Memory[]) =>
   memory.length
     ? memory.map((h, i) => `Round ${i + 1}: you picked ${h.mine}, your partner picked ${h.theirs}, you got ${h.payoff > 0 ? "+" : ""}${h.payoff} points.`).join("\n")
+    : "No rounds played yet.";
+
+/**
+ * Partner-only memory: what each partner played and whether you matched, but never your own
+ * pick. Tests whether self-repetition ("you picked X, you picked X…") is what blocks copying.
+ */
+const partnerLines = (memory: readonly Memory[]) =>
+  memory.length
+    ? memory.map((h, i) => `Round ${i + 1}: your partner picked ${h.theirs}; ${h.payoff > 0 ? `you matched (+${h.payoff} points)` : `you did not match (${h.payoff} points)`}.`).join("\n")
     : "No rounds played yet.";
 
 /** One line summarising what recent partners played, most frequent first. Used by the "tally" wording. */
@@ -51,8 +60,9 @@ export function partnerTally(memory: readonly Memory[]): string {
  */
 export function buildPrompt(wording: WordingId, order: readonly string[], memory: readonly Memory[]): ChatMessage[] {
   const options = order.join(", ");
-  if (wording === "game" || wording === "tally") {
+  if (wording === "game" || wording === "tally" || wording === "partners") {
     const tally = wording === "tally" && memory.length ? `\n${partnerTally(memory)}` : "";
+    const lines = wording === "partners" ? partnerLines(memory) : historyLines(memory);
     return [
       {
         role: "system",
@@ -65,7 +75,7 @@ export function buildPrompt(wording: WordingId, order: readonly string[], memory
       },
       {
         role: "user",
-        content: `Your recent rounds:\n${historyLines(memory)}${tally}\n\nWhich name do you pick this round? Answer with JSON: {"name": "<one name from the list>"}.`,
+        content: `Your recent rounds:\n${lines}${tally}\n\nWhich name do you pick this round? Answer with JSON: {"name": "<one name from the list>"}.`,
       },
     ];
   }

@@ -198,3 +198,11 @@ test("probes: roles rotate through the pool and answers classify", async () => {
   assert.deepEqual(m.map((h) => h.theirs), ["J", "J", "Q", "J", "Q"]);
   assert.ok(m.every((h) => h.payoff < 0 && h.mine === "X"));
 });
+
+test("partners wording shows partners' picks and outcomes, never the agent's own pick", () => {
+  const mem = [{ mine: "F", theirs: "Q", payoff: -50 }, { mine: "Q", theirs: "Q", payoff: 100 }];
+  const text = buildPrompt("partners", letters, mem)[1].content;
+  assert.match(text, /Round 1: your partner picked Q; you did not match \(-50 points\)\./);
+  assert.match(text, /Round 2: your partner picked Q; you matched \(\+100 points\)\./);
+  assert.doesNotMatch(text, /you picked/);
+});
