@@ -86,6 +86,29 @@ M players:  5  5  7  8 10 11 14 16 19 … 24 … 24
 
 **Flipped completely in 12 rounds.** The rule agents with memory 5 flipped 87% of the time at 5 committed agents, and more slowly. Gemma copies readily after losses, so once the committed agents keep "beating" their partners, the new name spreads fast. 3 and 7 committed agents are queued, to locate the cliff.
 
+## Test 7: more seeds, partner-only 7B, and the tipping cliff
+
+| Run | Converged | Winner | Repeat after a win | Copy after a loss | Explore |
+|---|---|---|---|---|---|
+| Gemma 4 26B, seed 0 | round 21 | F | 100% | 26% | 1% |
+| Gemma 4 26B, seed 1 | round 17 | X | 100% | 25% | 1% |
+| Gemma 4 26B, seed 2 | round 33 | Z | 100% | 21% | 1% |
+| Qwen 7B, standard memory | no (0.71 at round 40, rising) | (Q) | 99% | 13% | 18% |
+| **Qwen 7B, partner-only memory** | **round 32** | T | 99% | **50%** | 9% |
+
+- **3 of 3 Gemma populations converged, on three different names.** Gemma has no individual name preference (Test 5), and three different winners is what you'd expect with no collective bias. Three seeds can't rule a bias out. The paper's collective-bias effect would need many more seeds to test: about 40 minutes each at the free-tier pace.
+- **At 7B, hiding the agent's own picks unlocks copying** (13% → 50%) **and the population converges.** The repetition hypothesis from Test 1 is fully confirmed at 7B: the capability exists and the self-history in the prompt suppresses it. At 1.5B there was nothing to unlock. The probes predicted over-copying with partner-only memory (97% abandonment after one loss), but in the population the measured copy rate was 50%, inside the working range. Probes describe extreme scripted situations; populations average over the real mix.
+
+**Tipping a Gemma convention**, all from seed 0's population settled on F, one run per setting:
+
+| Committed agents | Agents on the new name after 5 / 10 / 20 / 30 rounds | Outcome |
+|---|---|---|
+| 3 (12.5%) | 4 / 5 / 5 / 9 | held, slowly eroding |
+| 5 (21%) | 10 / 22 / 24 / 24 | flipped by round 12 |
+| 7 (29%) | 11 / 22 / 24 / 24 | flipped by round 12 |
+
+The cliff sits between 12.5% and 21%, the same range as the rule agents with memory 3–5 ([07](07-tipping-vs-memory.md)) and a bit below the about 25% Centola et al. found in people. One run per setting, so this is a sketch, not a measurement.
+
 ## Not possible on this key
 
 Gemini 3.8 Flash worked in a smoke test, but the free tier allows **20 requests per day per model**. A population run needs 960. Running it needs billing enabled on the key's project. The cost would be small (about 300k input tokens per run).

@@ -186,9 +186,11 @@ function legend(el, items) {
   const tiles = makeGrid($("hero-grid"));
   const qwen = D.habitPoints.find((p) => p.id === "B");
   const prior = Object.fromEntries(NAMES.map((n, i) => [n, D.baselines["Qwen 1.5B"].counts[i] + 0.5]));
+  const gemma = D.habitPoints.find((p) => p.id === "G");
   const modes = {
     rule: () => majorityDecider(5),
     qwen: () => habitDecider({ winStay: qwen.winStay, copy: qwen.copy, keep: qwen.keep, prior }),
+    gemma: () => habitDecider({ winStay: gemma.winStay, copy: gemma.copy, keep: gemma.keep }),
   };
   let mode = "rule", pop, colours = stickyColours(), timer = null, series = [];
   const ROUNDS = 60;
@@ -201,7 +203,7 @@ function legend(el, items) {
   function draw() {
     lineChart($("hero-chart"), { x: [1, ROUNDS], y: [0, 1], xTicks: [1, 20, 40, 60], yTicks: [0, 0.5, 1], height: 250, xLabel: "round", aria: "Consensus by round",
       refs: [{ y: 0.9, label: "converged", right: true }, { y: 0.2, label: "chance", right: true }],
-      series: [{ label: mode === "rule" ? "agents that copy" : "Qwen 1.5B habits", color: "--s1", points: series, marker: series.length - 1 }], tipX: (r) => `round ${r}` });
+      series: [{ label: { rule: "agents that copy", qwen: "Qwen 1.5B habits", gemma: "Gemma 4 26B habits" }[mode], color: "--s1", points: series, marker: series.length - 1 }], tipX: (r) => `round ${r}` });
   }
   function tick() {
     if (pop.history.length >= ROUNDS) { clearInterval(timer); timer = setTimeout(() => { restart(); timer = setInterval(tick, 160); }, 2200); return; }
@@ -243,6 +245,7 @@ lineChart($("chart-rule"), {
     { k: "C", label: "Qwen 0.5B", ws: hp.C.winStay, copy: hp.C.copy, explore: hp.C.explore },
     { k: "D", label: "Llama 1B", ws: hp.D.winStay, copy: hp.D.copy, explore: hp.D.explore },
     { k: "plain", label: "Qwen 1.5B, other wording", ws: hp.plain.winStay, copy: hp.plain.copy, explore: hp.plain.explore },
+    { k: "G", label: "Gemma 4 26B", ws: hp.G.winStay, copy: hp.G.copy, explore: hp.G.explore },
   ];
   $("pg-presets").innerHTML = presets.map((p, i) => `<button type="button" data-i="${i}" aria-pressed="${i === 0}">${esc(p.label)}</button>`).join("");
   let pop, timer, series = [], colours = stickyColours();
@@ -401,7 +404,7 @@ lineChart($("chart-rule"), {
   ws.forEach((v, i) => { s += `<text class="tick" x="${L - 8}" y="${T + (ws.length - 1 - i + 0.5) * ch + 4}" text-anchor="end">${Math.round(v * 100)}%</text>`; });
   s += `<text class="axis-label" x="${(L + W - R) / 2}" y="${H - 8}" text-anchor="middle">copy the partner after a loss →</text>`;
   s += `<text class="axis-label" transform="translate(16 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">repeat after a win →</text>`;
-  const offsets = { nonsense: [12, -9], A: [12, 5], B: [12, 17], tally: [10, -9], plain: [10, 4], C: [10, 4], D: [10, 16], E: [10, 4] };
+  const offsets = { nonsense: [12, -11], A: [12, 9], B: [12, 17], tally: [10, -9], plain: [10, 4], C: [10, 4], D: [10, 16], E: [10, 4], F: [-9, -9, "end"], Fp: [10, 14], G: [10, 14] };
   for (const p of D.habitPoints) {
     const px = interp(cp, p.copy, cw, L, false), py = interp(ws, p.winStay, ch, T, true);
     const [dx, dy, anchor] = offsets[p.id] || [10, 4];
@@ -424,7 +427,32 @@ lineChart($("chart-rule"), {
   });
 })();
 
-// ---------- 6. individual baselines ----------
+// ---------- 6. size ladder ----------
+(function ladder() {
+  const models = ["Qwen 1.5B", "Qwen 3B", "Qwen 7B", "Gemma 4 26B", "Gemma 4 31B"];
+  const rows = [
+    ["win-streak", "Won 5 times on X → plays X", "X"],
+    ["lose-to-Y", "Lost 5 times on X; every partner played Y → plays Y", "Y"],
+    ["wins-then-loss", "Won 4 on X, then lost to Y → keeps X", "X"],
+    ["lose-mixed", "Lost 5 on X; partners Y, Y, Z, Y, Z → plays Y", "Y"],
+  ];
+  $("ladder-rows").innerHTML = rows.map(([id, text, good]) => `<tr><td>${text}</td>${models.map((m) => { const v = D.ladder[m][id][good]; return `<td class="num">${v >= 0.5 ? `<b>${pct(v)}</b>` : pct(v)}</td>`; }).join("")}</tr>`).join("");
+  const c = D.condCurves;
+  const gem = D.replays.find((r) => r.id === "naming-gemma-4-26b-a4b-it-letters-game-s0");
+  const series = [
+    { label: "Rule agents (200)", color: "--ink-3", points: c.R.curve.slice(0, 40).map((v, i) => [i + 1, v]) },
+    { label: `Gemma 4 26B (${c.G.seeds}, mean)`, color: "--s3", points: c.G.curve.map((v, i) => [i + 1, v]) },
+    { label: "Qwen 7B, partner-only", color: "--s7", points: c.Fp.curve.map((v, i) => [i + 1, v]) },
+    { label: "Qwen 7B", color: "--s2", points: c.F.curve.map((v, i) => [i + 1, v]) },
+    { label: `Qwen 1.5B (${c.B.seeds}, mean)`, color: "--s1", points: c.B.curve.map((v, i) => [i + 1, v]) },
+  ];
+  legend($("ladder-legend"), series.map((s) => ({ label: s.label, color: s.color })));
+  lineChart($("chart-ladder"), { x: [1, 40], y: [0, 1], xTicks: [1, 10, 20, 30, 40], yTicks: [0, 0.25, 0.5, 0.75, 1], height: 320, width: 760, endLabels: true, right: 180, xLabel: "round", aria: "Consensus for bigger models",
+    refs: [{ y: 0.9, label: "converged" }], series, tipX: (r) => `round ${r}` });
+  void gem;
+})();
+
+// ---------- 7. individual baselines ----------
 (function baselines() {
   const el = $("chart-baselines");
   const leaders = { "Qwen 1.5B": ["Q", "T"], "Qwen 0.5B": ["W", "J"], "Llama 1B": [] };
@@ -497,6 +525,9 @@ lineChart($("chart-rule"), {
   for (const s of [kS, mS]) s.addEventListener("change", run);
   $("tp-run").addEventListener("click", run);
   run();
+  const gcol = { 3: "--s3", 5: "--s1", 7: "--s2" };
+  lineChart($("chart-gemma-tip"), { x: [0, 30], y: [0, 1], xTicks: [0, 10, 20, 30], yTicks: [0, 0.5, 1], height: 260, endLabels: true, right: 130, xLabel: "rounds since the minority started", aria: "Gemma tipping",
+    refs: [{ y: 0.5, label: "majority" }], series: D.gemmaTipping.map((t) => ({ label: `${t.k} committed (${pct(t.k / 24, 1)})`, color: gcol[t.k], points: [[0, 0], ...t.curve.map((v, i) => [i + 1, v])] })), tipX: (r) => `round ${r}` });
   const rows = D.tippingMemory.filter((r) => [3, 5, 8, 12].includes(r.memory));
   const colors = { 3: "--s3", 5: "--s1", 8: "--s7", 12: "--s2" };
   lineChart($("chart-critical"), { x: [1, 10], y: [0, 1], xTicks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], yTicks: [0, 0.5, 1], height: 280, endLabels: true, right: 110, xLabel: "committed agents (of 24)", aria: "Flip rate by committed agents and memory",

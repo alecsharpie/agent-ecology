@@ -3,7 +3,7 @@
 <header class="hero col">
   <div class="eyebrow">Agent ecology · Lab notes, made readable</div>
   <h1>How Crowds Make Up Their Minds</h1>
-  <p class="dek">Twenty-four small language models play a game with one rule: match your partner. Simple rule-following agents agree within twenty rounds. The language models never do. What's missing turns out to be one ordinary habit.</p>
+  <p class="dek">Twenty-four small language models play a game with one rule: match your partner. Simple rule-following agents agree within twenty rounds. Small language models never do; bigger ones do. The difference turns out to be one ordinary habit.</p>
 </header>
 
 <figure class="page" id="fig-hero">
@@ -17,19 +17,20 @@
         <div class="chips" role="group" aria-label="Which agents" id="hero-chips">
           <button type="button" data-k="rule" aria-pressed="true">Agents that copy</button>
           <button type="button" data-k="qwen" aria-pressed="false">Agents with Qwen 1.5B's habits</button>
+          <button type="button" data-k="gemma" aria-pressed="false">Agents with Gemma 4 26B's habits</button>
         </div>
         <div class="chart rel" id="hero-chart" style="margin-top:12px"></div>
       </div>
     </div>
   </div>
-  <figcaption><b>A convention forming, live.</b> Each square is an agent and the name it just played. Every round agents are paired at random, and a pair scores only if both pick the same name. On the left are agents that copy what their partners play. They lock onto one name within about twenty rounds, and nobody chooses which. Switch to agents with the habits we measured in a 1.5-billion-parameter language model and the population stalls at a split. These are simulations, re-run in your browser each time. Real model runs come later.</figcaption>
+  <figcaption><b>A convention forming, live.</b> Each square is an agent and the name it just played. Every round agents are paired at random, and a pair scores only if both pick the same name. On the left are agents that copy what their partners play. They lock onto one name within about twenty rounds, and nobody chooses which. Switch to agents with the habits we measured in a 1.5-billion-parameter language model and the population stalls at a split. Switch to the habits of a 26-billion-parameter model and it converges again. These are simulations, re-run in your browser each time. Real model runs come later.</figcaption>
 </figure>
 
 <div class="col">
   <div class="byline">
     <div><span class="k">Author</span>Alec Sharpie, with Claude</div>
     <div><span class="k">Published</span>October 1, 2026</div>
-    <div><span class="k">Data</span>25 pre-registered runs plus probes and cascade games, about 35,000 model calls</div>
+    <div><span class="k">Data</span>25 pre-registered runs, 7B–31B follow-ups, probes and cascade games: about 45,000 model calls</div>
     <div><span class="k">Code</span><a href="https://github.com/alecsharpie/agent-ecology">github.com/alecsharpie/agent-ecology</a></div>
   </div>
 
@@ -39,11 +40,12 @@
     <li><a href="#playground">3. A habit playground</a></li>
     <li><a href="#llms">4. What small language models do</a></li>
     <li><a href="#missing">5. The missing habit</a></li>
-    <li><a href="#bias">6. Where the winning name comes from</a></li>
-    <li><a href="#tipping">7. Tipping points</a></li>
-    <li><a href="#cascades">8. Herding into the wrong answer</a></li>
-    <li><a href="#classics">9. Two more classics</a></li>
-    <li><a href="#learned">10. What we learned</a></li>
+    <li><a href="#ladder">6. Where copying switches on</a></li>
+    <li><a href="#bias">7. Where the winning name comes from</a></li>
+    <li><a href="#tipping">8. Tipping points</a></li>
+    <li><a href="#cascades">9. Herding into the wrong answer</a></li>
+    <li><a href="#classics">10. Two more classics</a></li>
+    <li><a href="#learned">11. What we learned</a></li>
     <li><a href="#methods">Methods, predictions and mistakes</a></li>
   </ul>
 
@@ -175,7 +177,7 @@ Which name do you pick this round? Answer with JSON: {"name": "&lt;one name from
 
 <figure class="page" id="fig-habitmap">
   <div class="chart rel" id="chart-habitmap"></div>
-  <figcaption><b>A map of habits.</b> Background: agreement over the last 10 of 60 rounds for agents with no exploration (darker means more agreement). Conventions only form in the top band, where agents always repeat a winning name and copy 20–70% of the time. Dots: language-model populations, placed by their measured habits, pooled across seeds. Every one of them also explores after losses (16–92% of the time), which this map leaves out and which only pushes them further from agreement.</figcaption>
+  <figcaption><b>A map of habits.</b> Background: agreement over the last 10 of 60 rounds for agents with no exploration (darker means more agreement). Conventions only form in the top band, where agents always repeat a winning name and copy 20–70% of the time. Dots: language-model populations, placed by their measured habits, pooled across seeds. The small models also explore after losses (9–92% of the time), which this map leaves out and which only pushes them further from agreement. Gemma 4 26B explores 1% of the time and sits in the top band. Hover a dot for its exact habits.</figcaption>
 </figure>
 
 <div class="col">
@@ -185,14 +187,41 @@ Which name do you pick this round? Answer with JSON: {"name": "&lt;one name from
     <li><strong>Llama 1B is too fickle.</strong> It drops even a winning name two times out of three, so nothing accumulates.</li>
     <li><strong>Qwen 0.5B copies the most</strong>, about 22% of the time, more than its larger sibling. But it also abandons winners half the time.</li>
   </ul>
-  <p>What no model does, under any wording, is the thing every converging population needs: <strong>adopt a partner's name after losing to it</strong>.</p>
+  <p>What none of these small models does, under any wording, is the thing every converging population needs: <strong>adopt a partner's name after losing to it</strong>. Is that a matter of size? We climbed the ladder to find out.</p>
 
   <div class="callout">
     <span class="eyebrow">A correction we had to make</span>
     <p>We first wrote this up as "Qwen is stubborn, Llama is fickle", a difference between models. Then we ran the check the plan required: the same game with a second wording of the prompt. With the second wording the same Qwen model abandons a winning name 88% of the time, as fickle as Llama. Stubborn or fickle depends on the model <em>and</em> the prompt. That's why the "plain wording" dot sits next to Llama on the map. What held under every wording and name list we tried: <strong>copying stays rare</strong>.</p>
   </div>
 
-  <h2 id="bias">6. Where the winning name comes from</h2>
+  <h2 id="ladder">6. Where copying switches on</h2>
+  <p>We repeated the probes on bigger models: Qwen2.5 at 3 and 7 billion parameters (still in the browser), and Google's open Gemma 4 at 26 and 31 billion (through the Gemini API). Same prompt, same scripted memories.</p>
+</div>
+
+<figure class="page" id="fig-ladder">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Scripted last five rounds</th><th class="num">Qwen 1.5B</th><th class="num">Qwen 3B</th><th class="num">Qwen 7B</th><th class="num">Gemma 4 26B</th><th class="num">Gemma 4 31B</th></tr></thead>
+      <tbody id="ladder-rows"></tbody>
+    </table>
+  </div>
+  <figcaption><b>Copying switches on between 3B and 7B, and is complete by 26B.</b> Each cell is the share of samples that made the coordination-minded choice: stick with a name that keeps winning, switch to the name partners keep playing. Qwen 3B is the odd one out. It ignores its memory and picks the first-listed name 68% of the time. The ladder is not a smooth climb: 1.5B echoes itself, 3B reads the list, 7B starts reading its partners.</figcaption>
+</figure>
+
+<div class="col">
+  <p>Gemma 4 31B plays the textbook strategy: keep a winner, follow the partners' majority after losses, and don't overreact to one bad round. That is the rule agent from section 2, which the model arrived at from the prompt alone. So does a population of them converge?</p>
+</div>
+
+<figure class="page" id="fig-ladder-curves">
+  <div class="legend" id="ladder-legend"></div>
+  <div class="chart rel" id="chart-ladder"></div>
+  <figcaption><b>Bigger models form conventions.</b> Share of plays on each round's most common name. All three Gemma 4 26B populations converged, at rounds 21, 17 and 33, on three different names (F, X, Z). Qwen 7B with the standard prompt was still climbing at round 40. With its own past picks hidden from its memory, its copy rate rose from 13% to 50%, and it converged at round 32. Qwen 1.5B (mean of five seeds) is shown for comparison.</figcaption>
+</figure>
+
+<div class="col">
+  <p>Two results here answer the question from section 5. First, <strong>size matters, but it isn't the whole story</strong>. Qwen 7B has the copying habit, but a prompt that lists "you picked X" five times buries it; take those lines out and the same model converges. At 1.5B, taking them out reveals nothing: the model just guesses. Second, <strong>the populations that converge have exactly the habits the playground predicts</strong>. Gemma repeats a winning name 100% of the time, copies its partner about a quarter of the time after a loss, and almost never explores. You can load those habits in the hero figure at the top. Both successful runs are also in the replay in section 4.</p>
+
+  <h2 id="bias">7. Where the winning name comes from</h2>
   <p>The populations never fully agree, but they do lean. In four of five Qwen 1.5B runs, Q led. Where does Q come from? We asked 200 fresh agents, each with an empty memory and a freshly shuffled list, to pick a name.</p>
 </div>
 
@@ -220,9 +249,10 @@ Which name do you pick this round? Answer with JSON: {"name": "&lt;one name from
 
 <div class="col">
   <p>The same amplification appears in the rule agents with no language model at all. We gave each rule agent a weak lean toward F: on its own it picks F 12% of the time instead of about 10%. F then won 26% of the populations. <strong>A preference too weak to notice in any individual more than doubles at the level of the group.</strong> The paper we replicated reports group biases that no individual holds. With small models, we found something simpler but just as important: individual biases that the group magnifies.</p>
+  <p>Gemma is the clean test of the paper's version. On its own it has <em>no</em> favourite: all 200 fresh agents picked whichever name was listed first, so the shuffle spreads its picks evenly across the letters. Its three populations settled on F, X and Z, three different names. That is what you would expect with no collective bias. Three runs can't rule a bias out; it would take dozens of seeds, about 40 minutes each on the free API tier.</p>
 
-  <h2 id="tipping">7. Tipping points</h2>
-  <p>Once a convention exists, how many stubborn holdouts does it take to overturn it? Centola and colleagues found about 25% in groups of people. Our language-model populations never formed a convention to overturn, so here we use the rule agents. Below, a population first settles on a name (blue). Then a committed minority (dashed outlines) starts playing a new name (orange) and never stops.</p>
+  <h2 id="tipping">8. Tipping points</h2>
+  <p>Once a convention exists, how many stubborn holdouts does it take to overturn it? Centola and colleagues found about 25% in groups of people. We start with the rule agents, then try it on a real language-model convention. Below, a population first settles on a name (blue). Then a committed minority (dashed outlines) starts playing a new name (orange) and never stops.</p>
 </div>
 
 <figure class="page" id="fig-tipping">
@@ -249,7 +279,16 @@ Which name do you pick this round? Answer with JSON: {"name": "&lt;one name from
 </figure>
 
 <div class="col">
-  <h2 id="cascades">8. Herding into the wrong answer</h2>
+  <p>Now a real one. We took the first Gemma population, settled on F, and made 3, 5 or 7 of its 24 agents committed to a new name for 30 more rounds.</p>
+</div>
+
+<figure class="col" id="fig-gemma-tip">
+  <div class="chart rel" id="chart-gemma-tip"></div>
+  <figcaption><b>A language-model convention tips too.</b> Share of Gemma agents playing the new name after the committed minority starts. With 3 committed agents (12.5%) the old convention held for 30 rounds, though it was slowly eroding. With 5 (21%) or 7 (29%) it flipped completely, both within about 12 rounds, with almost identical paths. One run per setting, so treat the exact threshold loosely. It lands between 12.5% and 21%, in the same range as the rule agents and Centola's human groups.</figcaption>
+</figure>
+
+<div class="col">
+  <h2 id="cascades">9. Herding into the wrong answer</h2>
   <p>The naming game rewards following the crowd, since any shared name will do. Sometimes following the crowd is a mistake. The classic demonstration is the <strong>urn game</strong> (Bikhchandani, Hirshleifer and Welch 1992; Anderson and Holt 1997). A coin picks one of two urns: one holds two red balls and one blue, the other two blue and one red. Players go one at a time. Each privately draws a ball, which points to the right urn two times in three. Each sees everyone's earlier <em>guesses</em>, but not their balls, then guesses publicly.</p>
   <p>A perfectly rational player follows their own ball until the earlier guesses lead by two, then follows the crowd whatever they drew. That's correct for them, but their guess now carries no information, so the next player is in the same spot, and so on forever. This is an <strong>information cascade</strong>. With ten players, about one game in five locks into the wrong urn, even though everyone reasons perfectly. Our simulation gives 18.7%, against a theoretical 19.2%.</p>
   <p class="note">Naming the urns "A" and "B" left Qwen 1.5B at chance: its first guess matched its own ball 52% of the time. Naming them by colour ("the red urn") fixed that. Capability floors decide which social effects you can even observe.</p>
@@ -280,7 +319,7 @@ Which name do you pick this round? Answer with JSON: {"name": "&lt;one name from
 <div class="col">
   <p>That last case is the cleanest lesson in the whole project: <strong>a sensible rule for using other people's choices does not help if the first choices are systematically off. It amplifies them.</strong> Every player after the first saw more information than the first, and the group ended up worse than if nobody had looked.</p>
 
-  <h2 id="classics">9. Two more classics</h2>
+  <h2 id="classics">10. Two more classics</h2>
   <p>Two older results round out the picture, both about the gap between what individuals want and what the group produces. Both use simple rules, no language models.</p>
   <h3>Schelling's segregation model (1971)</h3>
   <p>Two kinds of agents live on a grid. Each is content if at least a share <em>t</em> of its neighbours are its own kind; discontented agents move to a random empty cell. At <em>t</em> = 30%, every agent is happy to be a one-in-three minority. Nobody wants segregation.</p>
@@ -318,10 +357,11 @@ Which name do you pick this round? Answer with JSON: {"name": "&lt;one name from
 </figure>
 
 <div class="col">
-  <h2 id="learned">10. What we learned</h2>
+  <h2 id="learned">11. What we learned</h2>
   <ol class="takeaways">
     <li><span><strong>Emergence needs a feedback loop.</strong> Conventions form when agents adopt what they see others doing, which makes it more visible, which gets it adopted more. Remove copying and nothing emerges, however capable the agents.</span></li>
     <li><span><strong>Small language models don't copy their partners.</strong> They mostly repeat their own past choice, or wander at random, depending on the prompt. Not one of 25 populations converged.</span></li>
+    <li><span><strong>Copying switches on with size, and then conventions form.</strong> Qwen 7B copies once its own past picks are out of the prompt; Gemma 4 26B copies reliably, and all three of its populations converged, tipped by a committed minority between 12.5% and 21%.</span></li>
     <li><span><strong>Habits belong to model and prompt together.</strong> The same model was stubborn under one wording and fickle under another. Any claim about "how a model behaves socially" has to survive a change of wording.</span></li>
     <li><span><strong>Groups amplify individual biases.</strong> Each model's populations drifted to its own favourite letters, because agents copy names they already like more readily. A small individual tilt becomes the group's direction.</span></li>
     <li><span><strong>Tipping points are cliffs.</strong> Overturning a convention takes a fairly fixed fraction of committed agents, 13–29% depending on memory. Below that nothing happens; just above it the flip is nearly certain.</span></li>
@@ -352,7 +392,8 @@ Which name do you pick this round? Answer with JSON: {"name": "&lt;one name from
 <div class="col">
   <p><strong>A measurement caveat.</strong> Our "converged" bar (above 90% on one name for five rounds) may be out of reach for any agent that samples its answers. An agent that drops a winning name 14% of the time leaves about 3 of 24 agents off-convention every round, and the bar allows at most 2. We kept the pre-registered rule and report the level of agreement alongside it.</p>
   <p><strong>Mistakes we caught.</strong> A dev-server setting meant results saved after start-up were never served, which would have silently restarted interrupted runs from round 1. One cascade run was hot-reloaded mid-way by an edit to its code; its last 12 games used a changed prompt and are excluded. A first back-of-envelope theory for cascades was off by 2.5 standard errors, because a cascade formed by the last two players has nobody after them to reveal it. A metric helper passed an array index where it expected a threshold. Tests caught that one. All of this is in the repository's journal.</p>
-  <p><strong>Limitations.</strong> Three small models, one name pool of letters (and one run with nonsense words), 40 rounds per run, mostly five seeds per condition. The paper we replicated used much larger models and longer games; our results say what happens at the small end, not that the paper is wrong.</p>
+  <p><strong>Follow-ups after the grid (exploratory, not pre-registered).</strong> Qwen2.5 3B and 7B ran in the browser like the others; 7B takes about 4 seconds a call. Gemma 4 26B and 31B ran through the Gemini API on its free tier, paced at 25 requests a minute, about 7 seconds per call. We also tried Gemini 3.8 Flash as a frontier anchor, but the free tier allows 20 requests a day, and one population needs 960.</p>
+  <p><strong>Limitations.</strong> Mostly small models, one name pool of letters (and one run with nonsense words), 40 rounds per run, five seeds per pre-registered condition and one to three for the follow-ups. Tipping on Gemma is one run per setting. The paper we replicated used larger models and longer games. Our results map where its findings start to hold; they don't say it is wrong.</p>
 
   <h3>References</h3>
   <ol class="refs">

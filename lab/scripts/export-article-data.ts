@@ -29,6 +29,9 @@ const replays = [
   ["naming-d-letters-game-s0", "Llama 1B · seed 0"],
   ["naming-b-letters-plain-s0", "Qwen 1.5B, plain wording · seed 0"],
   ["naming-e-letters-game-s0", "Half Qwen, half Llama · seed 0"],
+  ["naming-gemma-4-26b-a4b-it-letters-game-s0", "Gemma 4 26B · seed 0 (converges)"],
+  ["naming-f-letters-partners-s0", "Qwen 7B, partner-only memory · seed 0 (converges)"],
+  ["naming-f-letters-game-s0", "Qwen 7B · seed 0"],
 ].filter(([f]) => has(f)).map(([f, l]) => compact(f, l));
 
 // 2. Habit points for every model × prompt we ran (pooled over seeds).
@@ -48,6 +51,9 @@ const habitPoints = [
   { id: "C", label: "Qwen 0.5B", ...pooledHabits(seeds("naming-c-letters-game")) },
   { id: "D", label: "Llama 1B", ...pooledHabits(seeds("naming-d-letters-game")) },
   { id: "E", label: "Half Qwen, half Llama", ...pooledHabits(seeds("naming-e-letters-game")) },
+  { id: "F", label: "Qwen 7B", ...pooledHabits(seeds("naming-f-letters-game")) },
+  { id: "Fp", label: "Qwen 7B, partner-only", ...pooledHabits(seeds("naming-f-letters-partners")) },
+  { id: "G", label: "Gemma 4 26B", ...pooledHabits(seeds("naming-gemma-4-26b-a4b-it-letters-game")) },
 ];
 
 // 3. Habit map: final consensus for (win-stay × copy), no exploration, uniform names.
@@ -65,7 +71,7 @@ for (const w of WS) for (const c of CP) {
 
 // 4. Everything else, already summarised by earlier scripts.
 const rule = R("rule");
-const condCurves = Object.fromEntries([["B", "naming-b-letters-game"], ["A", "naming-a-letters-game"], ["C", "naming-c-letters-game"], ["D", "naming-d-letters-game"], ["E", "naming-e-letters-game"], ["tally", "naming-b-letters-tally"]].map(([k, p]) => {
+const condCurves = Object.fromEntries([["B", "naming-b-letters-game"], ["A", "naming-a-letters-game"], ["C", "naming-c-letters-game"], ["D", "naming-d-letters-game"], ["E", "naming-e-letters-game"], ["tally", "naming-b-letters-tally"], ["F", "naming-f-letters-game"], ["Fp", "naming-f-letters-partners"], ["G", "naming-gemma-4-26b-a4b-it-letters-game"]].map(([k, p]) => {
   const logs = seeds(p).filter(has).map((f) => R(f) as RunLog).filter((l) => l.meta.finishedAt);
   const cs = logs.map(roundConsensus);
   return [k, { seeds: logs.length, curve: cs[0].map((_, r) => +(cs.reduce((s, c) => s + c[r], 0) / cs.length).toFixed(3)) }];
@@ -92,6 +98,8 @@ console.log(JSON.stringify({
   ruleSummary: { converged: 195, seeds: 200, medianRounds: 19, biased: rule.conditions[2].bias, tipping: rule.tipping },
   tippingMemory: R("tipping-memory").rows,
   baselines: { "Qwen 1.5B": baselineOf("baseline-qwen2-5-1-5b-instruct-letters-game-t07"), "Qwen 0.5B": baselineOf("baseline-qwen2-5-0-5b-instruct-letters-game-t07"), "Llama 1B": baselineOf("baseline-llama-3-2-1b-letters-game-t07") },
+  ladder: Object.fromEntries([["Qwen 1.5B", "probe-qwen2-5-1-5b-instruct-game-t07"], ["Qwen 3B", "probe-qwen2-5-3b-instruct-game-t07"], ["Qwen 7B", "probe-qwen2-5-7b-instruct-game-t07"], ["Gemma 4 26B", "probe-gemma-4-26b-a4b-it-game-t07"], ["Gemma 4 31B", "probe-gemma-4-31b-it-game-t07"], ["Qwen 1.5B, partner-only", "probe-qwen2-5-1-5b-instruct-partners-t07"], ["Qwen 7B, partner-only", "probe-qwen2-5-7b-instruct-partners-t07"]].map(([k, f]) => [k, probesOf(f)])),
+  gemmaTipping: [3, 5, 7].map((k) => { const f = `tip-naming-gemma-4-26b-a4b-it-letters-game-s0-k${k}`; if (!has(f)) return null; const l = R(f) as RunLog; const alt = l.meta.committed.find((c) => c)!; return { k, curve: [...Array(l.meta.rounds).keys()].map((r) => l.plays.filter((p) => p.round === r && p.name === alt).length / 24) }; }).filter(Boolean),
   probes: { game: probesOf("probe-qwen2-5-1-5b-instruct-game-t07"), tally: probesOf("probe-qwen2-5-1-5b-instruct-tally-t07"), plain: probesOf("probe-qwen2-5-1-5b-instruct-plain-t07"), llama: probesOf("probe-llama-3-2-1b-game-t07") },
   cascades: { qwen: cascadeSummary("cascade-qwen2-5-1-5b-instruct-t07-colours"), llama: cascadeSummary("cascade-llama-3-2-1b-t07-colours"), qwenGreedy: cascadeSummary("cascade-qwen2-5-1-5b-instruct-t0-colours"), qwenLetters: cascadeSummary("cascade-qwen2-5-1-5b-instruct-t07") },
   elFarol: R("el-farol").rows.map((r: { label: string; mean: number; sd: number; crowded: number; good: number }) => ({ label: r.label, mean: +r.mean.toFixed(1), sd: +r.sd.toFixed(1), crowded: +r.crowded.toFixed(2), good: +r.good.toFixed(2) })),
