@@ -51,6 +51,41 @@ round  consensus  most played
 
 **Round 1: all 24 agents picked the first name in their shuffled list.** With empty memory Gemma's choice is pure position, so effectively random over names. That makes the collective-bias test clean: if some names win more often across seeds, the bias can't be individual taste. Seeds 1–2 and a 200-agent baseline are running.
 
+## Test 4: Qwen 7B population (condition F, seed 0, browser)
+
+| Measure | Qwen 7B | Gemma 26B | Qwen 1.5B (B, 5 seeds) |
+|---|---|---|---|
+| Converged | no (40 rounds) | yes, round 21 | 0/5 |
+| Consensus, last 10 rounds | 0.57, **still rising** (0.71 at round 40) | 1.00 | 0.39–0.55, flat |
+| Repeat after a win | 99% | 100% | 85% |
+| After a mismatch: copy / keep / explore | 13% / 69% / 18% | 26% / 73% / 1% | 4% / 65% / 31% |
+
+```
+round  consensus  most played
+    1       0.21  F×5 K×3 X×3 T×3
+   10       0.25  K×6 F×6 Z×4 T×3
+   20       0.38  K×9 Q×5 Z×5 T×3
+   30       0.42  Q×10 K×10 T×2 Z×2
+   40       0.71  Q×17 K×6 T×1
+```
+
+7B sits at the slow edge of the working region: it copies half as often as Gemma and still explores 18% of the time after a loss, so two names (K, then Q) compete for a long time before Q breaks away. It would probably converge with more rounds. About 4.3 s per call in the browser, so 70 minutes per run.
+
+## Test 5: Gemma's individual baseline
+
+200 fresh agents, empty memory: **all 200 picked the first name in their shuffled list.** Name counts are therefore flat (F 22, J 15, K 19, M 15, Q 19, R 23, T 15, W 21, X 26, Z 25). Gemma has no individual name preference in this prompt. Any name that keeps winning across seeds would be a genuinely collective bias, which is exactly the paper's claim, and testable here (seeds 1–2 running).
+
+## Test 6: tipping a Gemma convention
+
+Seed 0's settled population (all on F), plus 5 committed agents (21%) always playing M, for 30 more rounds:
+
+```
+round:      1  2  3  4  5  6  7  8  9  … 12 … 30
+M players:  5  5  7  8 10 11 14 16 19 … 24 … 24
+```
+
+**Flipped completely in 12 rounds.** The rule agents with memory 5 flipped 87% of the time at 5 committed agents, and more slowly. Gemma copies readily after losses, so once the committed agents keep "beating" their partners, the new name spreads fast. 3 and 7 committed agents are queued, to locate the cliff.
+
 ## Not possible on this key
 
 Gemini 3.8 Flash worked in a smoke test, but the free tier allows **20 requests per day per model**. A population run needs 960. Running it needs billing enabled on the key's project. The cost would be small (about 300k input tokens per run).
